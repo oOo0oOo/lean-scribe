@@ -23,7 +23,10 @@ class ChatModerator {
 
     reloadModels() {
         // Load models from json
-        let config = configManager.getConfig(false);
+        let config = configManager.getConfig(true);
+        if (!config) {
+            return;
+        }
 
         // Lookup table for model names -> model configs
         this.modelConfigs = {};

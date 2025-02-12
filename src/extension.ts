@@ -11,7 +11,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const scribe = Scribe.getInstance(context);
     scribe.register();
-    console.log('Lean Scribe is now active!');
 }
 
 export function deactivate() { }

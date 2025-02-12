@@ -2,12 +2,16 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 
 
-export function loadFileInScribeFolder(path: string): string | undefined {
+export function loadFileInScribeFolder(path: string): string | null {
     const scribeFolder = getScribeFolderUri();
+    if (!scribeFolder) {
+        return null;
+    }
     const filePath = vscode.Uri.joinPath(scribeFolder, path);
     if (fs.existsSync(filePath.fsPath)) {
         return fs.readFileSync(filePath.fsPath, 'utf8');
     }
+    return null;
 }
 
 
@@ -22,7 +26,7 @@ export function loadWorkspaceEnv() {
             const [key, value] = line.split('=');
             if (key && value) {
                 const val = value.trim();
-                if (!val.endsWith("...")) {
+                if (!val.includes("...")) {
                     process.env[key.trim()] = val;
                 }
             }
@@ -30,13 +34,14 @@ export function loadWorkspaceEnv() {
 }
 
 
-export function loadJSONInScribeFolder(path: string): any {
+export function loadJSONInScribeFolder(path: string): any | null {
     const response = loadFileInScribeFolder(path);
     if (response) {
         return JSON.parse(response);
     } else {
         console.error(`File not found: ${path}`);
     }
+    return null;
 }
 
 
@@ -51,15 +56,23 @@ export async function loadMostRecentLeanTextEditor(): Promise<vscode.TextEditor 
 }
 
 
-export function getScribeFolderPath(): string {
-    return getScribeFolderUri().fsPath;
+export function getScribeFolderPath(): string | null {
+    const scribeFolderUri = getScribeFolderUri();
+    if (!scribeFolderUri) {
+        return null;
+    }
+    return scribeFolderUri.fsPath;
 }
 
 
-export function getScribeFolderUri(): vscode.Uri {
+export function getScribeFolderUri(): vscode.Uri | null {
     // Get scribe folder path from settings
     const config = vscode.workspace.getConfiguration('lean-scribe');
     const scribeFolder = config.get<string>('scribeFolder', 'scribe');
+
+    if (!scribeFolder || !fs.existsSync(scribeFolder)) {
+        return null;
+    }
 
     return vscode.Uri.file(scribeFolder);
 }

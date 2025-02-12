@@ -88,6 +88,8 @@
     "@langchain/core": "^0.3.30",
     "@langchain/google-genai": "^0.1.6",
     "@langchain/openai": "^0.3.17",
+    "@types/adm-zip": "^0.5.7",
+    "adm-zip": "^0.5.16",
     "langchain": "^0.3.11",
     "nunjucks": "^3.2.4"
   }

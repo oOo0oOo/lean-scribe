@@ -4,14 +4,9 @@ import { getScribeFolderPath } from './utils';
 
 export class Logger {
     private static instance: Logger;
-    private logDir: string;
+    private logDir?: string;
 
-    private constructor() {
-        this.logDir = getScribeFolderPath() + '/logs';
-        if (!fs.existsSync(this.logDir)) {
-            fs.mkdirSync(this.logDir);
-        }
-    }
+    private constructor() { }
 
     static getInstance(): Logger {
         if (!Logger.instance) {
@@ -20,13 +15,27 @@ export class Logger {
         return Logger.instance;
     }
 
+    setLogDir(logDir: string = 'logs') {
+        const scribeFolderPath = getScribeFolderPath();
+        if (!scribeFolderPath) {
+            return;
+        }
+        this.logDir = path.join(scribeFolderPath, logDir);
+        if (!fs.existsSync(this.logDir)) {
+            fs.mkdirSync(this.logDir, { recursive: true });
+        }
+    }
+
     getLogUri(line: number) {
         return "file://" + this.getLogFilePath() + "#" + line;
     }
 
     getLogFilePath(): string {
+        if (!this.logDir) {
+            this.setLogDir();
+        }
         const date = new Date().toISOString().split('T')[0];
-        return path.join(this.logDir, `${date}.md`);
+        return path.join(this.logDir!, `${date}.md`);
     }
 
     log(message: string): string {

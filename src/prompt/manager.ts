@@ -22,8 +22,7 @@ export type RenderedPrompt = {
 
 // Regex to extract description string.
 // {% prompt "Description here" %}
-// Make half compliant with " or ' and allow for arbitrary whitespace.
-// const descriptionRegex = /{%\s*scribe\s*["']\s*(.*)\s*["']\s*%}/;
+// Half compliant with " or ' and allow for arbitrary whitespace.
 const metaRegex = /{%\s*scribe\s*["']\s*(.*?)\s*["']\s*(?:,\s*["']\s*(.*?)\s*["'])?\s*%}/;
 
 export class PromptManager {
@@ -45,6 +44,9 @@ export class PromptManager {
 
     async indexAllPrompts() {
         const fUri = getScribeFolderUri();
+        if (!fUri) {
+            return;
+        }
         const files = await vscode.workspace.fs.readDirectory(fUri);
 
         for (const [name, type] of files) {

@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import https from 'https';
+import AdmZip from 'adm-zip';
+import os from 'os';
 
 import { PromptManager } from './prompt/manager';
 import { accountingManager } from './accounting';
@@ -28,44 +31,100 @@ export class Scribe {
     register() {
         // Setup lean-scribe command (sets up global folder)
         const setup_cmd = vscode.commands.registerCommand('lean-scribe.setup', async () => {
-            // Get current setting for scribe folder
-            let scribeFolder = vscode.workspace.getConfiguration('lean-scribe').get<string>('scribeFolder');
-
-            // If no current setting: Use homedir + scribe as default folder
-            if (!scribeFolder) {
-                scribeFolder = path.join(require('os').homedir(), 'scribe');
-                // Create empty folder if it doesn't exist
-                if (!fs.existsSync(scribeFolder)) {
-                    fs.mkdirSync(scribeFolder);
-                }
-            }
-
-            // Ask user to select a folder
-            const folderPath = await vscode.window.showOpenDialog({
-                canSelectFiles: false,
-                canSelectFolders: true,
-                canSelectMany: false,
-                openLabel: 'Select scribe folder',
-                defaultUri: vscode.Uri.file(scribeFolder)
-            });
-
-            if (!folderPath) {
+            const defaultFolder = path.join(os.homedir(), 'scribe');
+            const choice = await vscode.window.showInformationMessage(
+                `Do you want to use the default scribe folder location? ${defaultFolder}`,
+                'Use Default Location',
+                'Choose Another Location',
+                'Cancel'
+            );
+            if (!choice || choice === 'Cancel') {
                 return;
             }
 
-            // Update setting
-            vscode.workspace.getConfiguration('lean-scribe').update('scribeFolder', folderPath[0].fsPath, true);
+            let scribeFolder = defaultFolder;
 
-            // Delete created folder if it is empty and not selected
-            if (scribeFolder !== folderPath[0].fsPath) {
-                if (fs.readdirSync(scribeFolder).length === 0) {
-                    fs.rmdirSync(scribeFolder);
+            if (choice === 'Choose Another Location') {
+                const folderPath = await vscode.window.showOpenDialog({
+                    canSelectFiles: false,
+                    canSelectFolders: true,
+                    canSelectMany: false,
+                    openLabel: 'Select scribe folder',
+                    defaultUri: vscode.Uri.file(defaultFolder)
+                });
+                if (!folderPath) {
+                    return;
+                }
+                scribeFolder = folderPath[0].fsPath;
+            }
+
+            if (!fs.existsSync(scribeFolder)) {
+                fs.mkdirSync(scribeFolder);
+            }
+
+            vscode.workspace.getConfiguration('lean-scribe').update('scribeFolder', scribeFolder, true);
+
+            const setupDefaults = await vscode.window.showInformationMessage(
+                'Set up default prompts and models in scribe folder?',
+                'Yes (recommended)',
+                'No'
+            );
+            if (setupDefaults === 'Yes (recommended)') {
+                try {
+                    // Download zip from GitHub, then copy example_scribe_folder to scribeFolder
+                    const downloadUrl = 'https://codeload.github.com/oOo0oOo/lean-scribe/zip/refs/heads/main';
+
+                    const dataChunks: Buffer[] = [];
+                    await new Promise<void>((resolve, reject) => {
+                        https.get(downloadUrl, (res: any) => {
+                            res.on('data', (chunk: Buffer) => dataChunks.push(chunk));
+                            res.on('end', resolve);
+                            res.on('error', reject);
+                        });
+                    });
+
+                    const zip = new AdmZip(Buffer.concat(dataChunks));
+                    const tmpDir = path.join(os.tmpdir(), `lean-scribe-temp-${Date.now()}`);
+                    fs.mkdirSync(tmpDir, { recursive: true });
+                    zip.extractAllTo(tmpDir, true);
+
+                    const exampleDir = path.join(tmpDir, 'lean-scribe-main', 'example_scribe_folder');
+                    if (!fs.existsSync(exampleDir)) {
+                        throw new Error('example_scribe_folder not found in downloaded archive.');
+                    }
+
+                    fs.readdirSync(exampleDir)
+                        .forEach(file => {
+                            fs.copyFileSync(path.join(exampleDir, file), path.join(scribeFolder, file));
+                        });
+
+                    fs.rmSync(tmpDir, { recursive: true, force: true });
+
+                    // Add API keys to .env
+                    const addKeys = await vscode.window.showInformationMessage(
+                        'API keys are required to use the models. Do you want to add API keys to the .env file now?',
+                        'Yes',
+                        'No'
+                    );
+
+                    if (addKeys === 'Yes') {
+                        const envPath = path.join(scribeFolder, '.env');
+                        const uri = vscode.Uri.file(envPath);
+                        const doc = await vscode.workspace.openTextDocument(uri);
+                        await vscode.window.showTextDocument(doc);
+                    }
+
+                } catch (err: any) {
+                    vscode.window.showErrorMessage(`Error setting up defaults: ${err.message}`);
                 }
             }
+            this.refreshScribe();
+            vscode.window.showInformationMessage('Scribe folder has been set up:\n' + scribeFolder);
         });
         this.context.subscriptions.push(setup_cmd);
 
         const cmd = vscode.commands.registerCommand('lean-scribe.openLeanScribe', () => {
+            this.refreshScribe();
             if (this.panel) {
                 this.panel.reveal(vscode.ViewColumn.Beside);
             } else {
@@ -265,12 +324,18 @@ export class Scribe {
                     break;
 
                 case 'refresh_scribe':
-                    await configManager.loadConfig();
-                    await this.promptManager.indexAllPrompts();
-                    await loadWorkspaceEnv();
-                    vscode.window.showInformationMessage('Refreshed: Prompt search, models.json and .env');
+                    this.refreshScribe();
+                    vscode.window.showInformationMessage('Reloaded: Prompt search, models.json and .env');
                     break;
             }
         });
+    }
+
+    private refreshScribe() {
+        loadWorkspaceEnv();
+        configManager.loadConfig();
+        accountingManager.loadConfig();
+        chatModerator.reloadModels();
+        this.promptManager.indexAllPrompts();
     }
 }

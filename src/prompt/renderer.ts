@@ -4,19 +4,26 @@ import { getScribeFolderPath } from '../utils';
 import { setupNunjucksEnvironment } from './nunjuckExtensions';
 import { setupCustomFilters } from './filters';
 
-const scribePath = getScribeFolderPath();
-const nunjucksEnv = nunjucks.configure([scribePath], { autoescape: false });
-setupNunjucksEnvironment(nunjucksEnv);
-setupCustomFilters(nunjucksEnv);
-
-
 import { Prompt, RenderedPrompt } from './manager';
 import { prepareAllPromptVariables } from './variables';
 
 // Extract system message [[system]]...[[system]]
 const systemRegex = /\[\[\s*system\s*\]\]\s*([\s\S]*?)\s*\[\[\s*system\s*\]\]/;
 
+let nunjucksEnv: any | null = null;
+
+function initializeNunjucksEnvironment() {
+    const scribePath = getScribeFolderPath();
+    nunjucksEnv = nunjucks.configure([scribePath], { autoescape: false });
+    setupNunjucksEnvironment(nunjucksEnv);
+    setupCustomFilters(nunjucksEnv);
+}
+
 export async function renderPrompt(prompt: Prompt): Promise<RenderedPrompt> {
+    if (!nunjucksEnv) {
+        initializeNunjucksEnvironment();
+    }
+
     const followUp = prompt.followUp;
     const variables = await prepareAllPromptVariables(prompt);
     // const rendered = nunjucksEnv.render(prompt.path, variables); // This has some kind of cache!! Doesn't always reload...

@@ -47,7 +47,10 @@ class AccountingManager {
     }
 
     async loadConfig() {
-        const config = configManager.getConfig();
+        const config = configManager.getConfig(true);
+        if (!config) {
+            return;
+        }
 
         // Check available models via env variables
         const keys = [
@@ -104,19 +107,19 @@ class AccountingManager {
     public getOutputReport(message: AIMessageChunk, model: string): OutputReport {
         let inTokens = 0;
         let outTokens = 0;
-        
+
         if (message.response_metadata?.usage?.prompt_tokens != null) {
-          // OpenAI
-          inTokens = message.response_metadata.usage.prompt_tokens;
-          outTokens = message.response_metadata.usage.completion_tokens;
+            // OpenAI
+            inTokens = message.response_metadata.usage.prompt_tokens;
+            outTokens = message.response_metadata.usage.completion_tokens;
         } else if (message.usage_metadata?.input_tokens != null) {
-          // Anthropic
-          inTokens = message.usage_metadata.input_tokens;
-          outTokens = message.usage_metadata.output_tokens;
+            // Anthropic
+            inTokens = message.usage_metadata.input_tokens;
+            outTokens = message.usage_metadata.output_tokens;
         } else {
-          // Default
-          inTokens = message.response_metadata?.tokenUsage?.input_tokens;
-          outTokens = message.response_metadata?.tokenUsage?.output_tokens;
+            // Default
+            inTokens = message.response_metadata?.tokenUsage?.input_tokens;
+            outTokens = message.response_metadata?.tokenUsage?.output_tokens;
         }
 
         const costIn = this.costs[model][0] * (inTokens || 0) / 1e6;

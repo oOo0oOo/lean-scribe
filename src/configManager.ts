@@ -3,7 +3,7 @@ import { loadJSONInScribeFolder } from "./utils";
 
 class ConfigManager {
     private static instance: ConfigManager;
-    private config: any;
+    private config: any | null;
 
     private constructor() {
         this.loadConfig();
@@ -17,7 +17,7 @@ class ConfigManager {
     }
 
     loadConfig() {
-        this.config = loadJSONInScribeFolder('models.json') || {};
+        this.config = loadJSONInScribeFolder('models.json');
     }
 
     getConfig(reload: boolean = false): any {
