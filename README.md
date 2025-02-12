@@ -6,19 +6,19 @@ Lean Scribe is a VSCode extension for rendering and running context-rich Lean 4 
 
 ### Render context-rich prompts
 
-![Render context-rich prompts](screenshots/render_prompts.png)
+![Render context-rich prompts](https://github.com/oOo0oOo/lean-scribe/blob/main/screenshots/render_prompts.png)
 
 ### Query multiple state-of-the-art large language models
 
-![Query multiple state-of-the-art models](screenshots/multiple_llms.png)
+![Query multiple state-of-the-art models](https://github.com/oOo0oOo/lean-scribe/blob/main/screenshots/multiple_llms.png)
 
 ### Define prompts as shareable markdown files with variables
 
-![Define prompts as markdown files](screenshots/context_rich_prompts.png)
+![Define prompts as markdown files](https://github.com/oOo0oOo/lean-scribe/blob/main/screenshots/context_rich_prompts.png)
 
 ## Getting Started with Lean Scribe
 
-1. Install the Lean4 vscode extension.
+1. Install the `Lean 4` vscode extension.
 2. Install the `Lean Scribe` vscode extension.
 3. Setup Lean Scribe folder (`Ctrl+Shift+P` -> `Lean Scribe: Setup Scribe Folder`).
 4. Show Lean Scribe (`Ctrl+Shift+P` -> `Lean Scribe: Show`).
@@ -101,7 +101,7 @@ Reply concisely and distill to the essence.
 We are now using `filters` to process a variable before rendering.
 `file` is the raw text of the file, `remove_initial_comment` and `md` are applied in that order.
 
-Read more about templating below, or check out the [example prompts]()
+Read more about templating below, or check out the [example prompts](https://github.com/oOo0oOo/lean-scribe/tree/main/example_scribe_folder).
 
 ## {% scribe "" %} tag
 
@@ -197,3 +197,26 @@ This creates a button, which will render that prompt.
 ```
 
 NOTE: For now, the HTML for this button is part of the sent prompt.
+
+## Settings (VSCode)
+
+Lean Scribe has a few settings that can be configure via VSCode settings.
+You can set these for a user or for each workspace separately.
+
+`Ctrl+Shift+P` -> `Preferences: Open User Settings` -> Search "Lean Scribe"
+
+### Scribe Folder
+
+Set the scribe folder location. It is recommended that you set up the scribe folder via the command `Lean Scribe: Setup Scribe Folder` and not change this setting manually.
+
+### Acknowledge Price Unreliable
+
+If you want to see price information you need to acknowledge that it might be unreliable.
+
+### Code Color Scheme
+
+Color scheme to use for highlighting code blocks in prompts. See [here](https://highlightjs.org/demo).
+
+### Logging
+
+Enable logging prompts and replies to a file. Logs are stored in the `scribe_folder/logs/` directory in daily files and can get quite large.
