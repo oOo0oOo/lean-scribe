@@ -94,10 +94,7 @@ export class Scribe {
                         throw new Error('example_scribe_folder not found in downloaded archive.');
                     }
 
-                    fs.readdirSync(exampleDir)
-                        .forEach(file => {
-                            fs.copyFileSync(path.join(exampleDir, file), path.join(scribeFolder, file));
-                        });
+                    await this.copyDirectory(exampleDir, scribeFolder);
 
                     fs.rmSync(tmpDir, { recursive: true, force: true });
 
@@ -148,6 +145,23 @@ export class Scribe {
             }
         });
         this.context.subscriptions.push(cmd);
+    }
+
+    private async copyDirectory(srcDir: string, destDir: string) {
+        const entries = fs.readdirSync(srcDir, { withFileTypes: true });
+
+        fs.mkdirSync(destDir, { recursive: true });
+
+        for (const entry of entries) {
+            const srcPath = path.join(srcDir, entry.name);
+            const destPath = path.join(destDir, entry.name);
+
+            if (entry.isDirectory()) {
+                await this.copyDirectory(srcPath, destPath);
+            } else {
+                fs.copyFileSync(srcPath, destPath);
+            }
+        }
     }
 
     private getHtmlContent(): string {
