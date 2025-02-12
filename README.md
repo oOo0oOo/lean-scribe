@@ -1,4 +1,4 @@
-# Lean Scribe
+# 📜 Lean Scribe
 
 Lean Scribe is a VSCode extension for rendering and running context-rich Lean 4 prompts.
 
@@ -8,15 +8,15 @@ Lean Scribe is meant to be used alongside the [Lean 4 VSCode extension](https://
 
 ### Render context-rich prompts
 
-![Render context-rich prompts](https://github.com/oOo0oOo/lean-scribe/blob/main/screenshots/render_prompts.png)
+![Render context-rich prompts](https://github.com/oOo0oOo/lean-scribe/blob/main/images/render_prompts.png)
 
 ### Query multiple state-of-the-art large language models
 
-![Query multiple state-of-the-art models](https://github.com/oOo0oOo/lean-scribe/blob/main/screenshots/multiple_llms.png)
+![Query multiple state-of-the-art models](https://github.com/oOo0oOo/lean-scribe/blob/main/images/multiple_llms.png)
 
 ### Define prompts as shareable markdown files with variables
 
-![Define prompts as markdown files](https://github.com/oOo0oOo/lean-scribe/blob/main/screenshots/context_rich_prompts.png)
+![Define prompts as markdown files](https://github.com/oOo0oOo/lean-scribe/blob/main/images/context_rich_prompts.png)
 
 ## Installing Lean Scribe
 
@@ -75,7 +75,7 @@ Overall, Jinja templating is quite powerful, you can include or even inherit fro
 Let's look at a simple example:
 
 ```jinja
-{% scribe "Explain a lean file."}
+{% scribe "Explain a lean file." %}
 Explain this lean file to me:
 {{ file_md }} 
 ```
@@ -86,7 +86,7 @@ The scribe tag plus a description tell Lean Scribe that this is a valid prompt.
 Let's expand the previous example:
 
 ```jinja
-{% scribe "Explain a lean file."}
+{% scribe "Explain a lean file." %}
 
 You are an AI that has studied all of known mathematics.
 
@@ -192,7 +192,9 @@ NOTE: System prompts are not available on some models like "OpenAI o1".
 ### Reference other prompt
 
 Use the `prompt` tag to reference another prompt.
-This creates a button, which will render that prompt.
+This creates a button, which will render that prompt when clicked.
+
+Note: The path to the prompt is relative to the current prompt.
 
 ```jinja
 {% prompt "explain_lean.md", "Run this again" %}

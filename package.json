@@ -1,15 +1,26 @@
 {
   "name": "lean-scribe",
   "displayName": "Lean Scribe",
-  "description": "Render and run context-rich Lean 4 prompts in VS Code.",
+  "description": "Render and run context-rich Lean 4 prompts.",
   "version": "0.0.1",
   "license": "MIT",
   "publisher": "oliverdressler",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oOo0oOo/lean-scribe.git"
+  },
   "engines": {
     "vscode": "^1.96.0"
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "Lean",
+    "Lean 4",
+    "LLM",
+    "Prompt"
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
@@ -35,7 +46,7 @@
         },
         "lean-scribe.acknowledgePriceUnreliable": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "I acknowledge that all price information is unreliable!"
         },
         "lean-scribe.logging": {
