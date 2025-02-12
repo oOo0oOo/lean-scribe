@@ -12,3 +12,13 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+
+scripts/
+test_workspace/
+infos/
+example_scribe_folder/
+docs/
+
+TODO.md
+PROMPT.md
+release.sh
