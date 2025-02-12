@@ -1,0 +1,133 @@
+{
+    "default": [
+        "OpenAI o1",
+        "OpenAI o3-mini-high",
+        "Anthropic Claude 3.5 Sonnet",
+        "Google Gemini 2.0 Flash Thinking",
+        "Google Gemini 2.0 Pro Exp",
+        "Deepseek R1"
+    ],
+    "models": [
+        {
+            "type": "openai",
+            "name": "OpenAI o3-mini-high",
+            "cost": [1.1, 4.4, "2025-01-31"],
+            "limit": 200000,
+            "params": {
+                "model": "o3-mini",
+                "reasoning_effort": "high"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI o3-mini",
+            "cost": [1.1, 4.4, "2025-01-31"],
+            "limit": 200000,
+            "params": {
+                "model": "o3-mini"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI GPT-4o mini",
+            "cost": [0.15, 0.6, "2025-01-17"],
+            "limit": 128000,
+            "params": {
+                "model": "gpt-4o-mini"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI GPT-4o",
+            "cost": [2.5, 10, "2025-01-17"],
+            "limit": 128000,
+            "params": {
+                "model": "gpt-4o"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI o1",
+            "cost": [15, 60, "2025-01-17"],
+            "limit": 200000,
+            "params": {
+                "model": "o1"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI o1-mini",
+            "cost": [3, 12, "2025-01-17"],
+            "limit": 128000,
+            "params": {
+                "model": "o1-mini"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI o1-preview",
+            "cost": [15, 60, "2025-01-17"],
+            "limit": 128000,
+            "params": {
+                "model": "o1-preview"
+            }
+        },
+
+        {
+            "type": "anthropic",
+            "name": "Anthropic Claude 3.5 Sonnet",
+            "cost": [3, 15, "2025-01-17"],
+            "limit": 200000,
+            "params": {
+                "model": "claude-3-5-sonnet-latest"
+            }
+        },
+        {
+            "type": "anthropic",
+            "name": "Anthropic Claude 3.5 Haiku",
+            "cost": [0.8, 4, "2025-01-17"],
+            "limit": 200000,
+            "params": {
+                "model": "claude-3-5-haiku-latest"
+            }
+        },
+
+        {
+            "type": "google",
+            "name": "Google Gemini 2.0 Flash",
+            "cost": [0.1, 0.4, "2025-02-10"],
+            "limit": 1048576,
+            "params": {
+                "model": "gemini-2.0-flash"
+            }
+        },
+        {
+            "type": "google",
+            "name": "Google Gemini 2.0 Flash Thinking",
+            "cost": [0.0, 0.0, "2025-02-10"],
+            "limit": 1048576,
+            "params": {
+                "model": "gemini-2.0-flash-thinking-exp-01-21"
+            }
+        },
+        {
+            "type": "google",
+            "name": "Google Gemini 2.0 Pro Exp",
+            "cost": [0, 0, "2025-02-10"],
+            "limit": 2097152,
+            "params": {
+                "model": "gemini-2.0-pro-exp-02-05"
+            }
+        },
+
+        {
+            "type": "fireworks",
+            "name": "Deepseek R1",
+            "cost": [8, 8, "2025-01-29"],
+            "limit": 160000,
+            "params": {
+                "model": "accounts/fireworks/models/deepseek-r1"
+            }
+        }
+    ]
+}

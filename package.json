@@ -1,0 +1,94 @@
+{
+  "name": "lean-scribe",
+  "displayName": "Lean Scribe",
+  "description": "Render and run context-rich Lean 4 prompts in VS Code.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "publisher": "oliverdressler",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lean-scribe.openLeanScribe",
+        "title": "Lean Scribe: Show"
+      },
+      {
+        "command": "lean-scribe.setup",
+        "title": "Lean Scribe: Setup Scribe Folder"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Lean Scribe Configuration",
+      "properties": {
+        "lean-scribe.scribeFolder": {
+          "type": "string",
+          "default": "",
+          "description": "The folder where models.json and all prompts are located."
+        },
+        "lean-scribe.acknowledgePriceUnreliable": {
+          "type": "boolean",
+          "default": true,
+          "description": "I acknowledge that all price information is unreliable!"
+        },
+        "lean-scribe.logging": {
+          "type": "boolean",
+          "default": true,
+          "description": "Log all prompts and responses to logs/."
+        },
+        "lean-scribe.codeColorScheme": {
+          "type": "string",
+          "default": "github-dark",
+          "description": "The color scheme for code blocks. See https://highlightjs.org/demo."
+        }
+      }
+    }
+  },
+  "extensionDependencies": [
+    "leanprover.lean4"
+  ],
+  "scripts": {
+    "vscode:prepublish": "yarn run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "serve-docs": "docsify serve docs"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/nunjucks": "^3.2.6",
+    "@types/vscode": "^1.96.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "docsify-cli": "^4.4.4",
+    "eslint": "^9.16.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.7.3",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@langchain/anthropic": "^0.3.11",
+    "@langchain/community": "^0.3.28",
+    "@langchain/core": "^0.3.30",
+    "@langchain/google-genai": "^0.1.6",
+    "@langchain/openai": "^0.3.17",
+    "langchain": "^0.3.11",
+    "nunjucks": "^3.2.4"
+  }
+}

@@ -1,0 +1,182 @@
+body {
+  color: var(--vscode-editor-foreground);
+  background-color: var(--vscode-editorGroupHeader-tabsBackground);
+}
+
+#app {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.text-normal {
+  color: var(--vscode-editor-foreground);
+}
+
+.text-light {
+  color: var(--vscode-editorLineNumber-foreground);
+}
+
+.text-lighter {
+  color: var(--vscode-editorGhostText-foreground);
+}
+
+/* CHAT VIEW */
+#chat-view {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vscode-scrollbarSlider-background) transparent;
+}
+
+.message-element {
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+.model-element {
+  background-color: var(--vscode-editorWidget-background);
+  color: var(--vscode-editor-foreground);
+}
+
+.button-element {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.all-models-button {
+  background-color: var(--vscode-editorMarkerNavigation-background);
+  color: var(--vscode-editor-foreground);
+}
+
+.log-link {
+  cursor: pointer;
+  color: var(--vscode-textLink-foreground);
+}
+
+.code-hidden {
+  display: none !important;
+}
+
+.group-hover\:flex {
+  display: none;
+}
+
+.group:hover .group-hover\:flex {
+  display: flex;
+}
+
+/* CONTROL PANEL */
+.prompt-input {
+  color: var(--vscode-editorMarkerNavigation-foreground);
+  background-color: var(--vscode-editorMarkerNavigation-background);
+  &::placeholder {
+    color: var(--vscode-editorMarkerNavigation-foreground);
+  }
+}
+
+#control-panel {
+  background-color: var(--vscode-editor-background);
+  border-color: var(--vscode-editorGroupHeader-tabsBackground);
+}
+
+.suggestions-container {
+  position: absolute;
+  bottom: 100%;
+  right: 0%;
+  left: 0%;
+  z-index: 10;
+  background-color: var(--vscode-editor-background);
+  border-color: var(--vscode-editorGroupHeader-tabsBackground);
+}
+
+.suggestion-item {
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  border-color: var(--vscode-editorGroupHeader-tabsBackground);
+}
+
+.suggestion-item:hover {
+  background-color: var(--vscode-editor-selectionBackground);
+  color: var(--vscode-editor-selectionForeground);
+}
+
+.suggestion-selected {
+  background-color: var(--vscode-editor-selectionBackground);
+  color: var(--vscode-editor-selectionForeground);
+}
+
+
+/* Markdown */
+
+h1, h2, h3, h4, h5 {
+  font-weight: bold !important;
+  margin-top: 0 !important;
+  margin-bottom: 0.5em !important;
+}
+
+h1 {
+  font-size: 2em !important;
+}
+
+h2 {
+  font-size: 1.5em !important;
+}
+
+h3 {
+  font-size: 1.17em !important;
+}
+
+h4 {
+  font-size: 1em !important;
+}
+
+h5 {
+  font-size: 0.83em !important;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+
+a {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--vscode-textLink-activeForeground);
+}
+
+blockquote {
+  border-left: 4px solid var(--vscode-editor-foreground);
+  font-style: italic;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-left: 1em;
+  color: var(--vscode-editor-foreground);
+  font-size: 1.17em;
+}
+
+ul {
+  list-style-type: disc !important;
+  list-style-position: outside !important;
+  margin-left: 1.5em !important;
+  padding-left: 0 !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+ol {
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  margin-left: 1.5em !important;
+  padding-left: 0 !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+li {
+  margin-bottom: 0.25em !important;
+}
