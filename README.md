@@ -1,6 +1,8 @@
 # Lean Scribe
 
-Lean Scribe is a VSCode extension for rendering and running context-rich Lean 4 prompts
+Lean Scribe is a VSCode extension for rendering and running context-rich Lean 4 prompts.
+
+Lean Scribe is meant to be used alongside the [Lean 4 VSCode extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4).
 
 ## Features
 
@@ -16,30 +18,30 @@ Lean Scribe is a VSCode extension for rendering and running context-rich Lean 4 
 
 ![Define prompts as markdown files](https://github.com/oOo0oOo/lean-scribe/blob/main/screenshots/context_rich_prompts.png)
 
-## Getting Started with Lean Scribe
+## Installing Lean Scribe
 
-1. Install the `Lean 4` vscode extension.
-2. Install the `Lean Scribe` vscode extension.
+1. Install the [Lean 4 VSCode extension](vscode:extension/leanprover.lean4).
+2. Install the [Lean Scribe VSCode extension](vscode:extension/oliverdressler.lean-scribe).
 3. Setup Lean Scribe folder (`Ctrl+Shift+P` -> `Lean Scribe: Setup Scribe Folder`).
 4. Show Lean Scribe (`Ctrl+Shift+P` -> `Lean Scribe: Show`).
 5. Render your first prompt!
 
 ## Scribe folder
 
-Lean Scribe uses a folder for storage.
+Lean Scribe uses a global folder for storage.
 
 Default location is the home directory:
 
-- Linux: `~/scribe/`
+- Linux: `/home/username/scribe/`
 - Windows: `C:\Users\username\scribe\`
 - MacOS: `/Users/username/scribe/`
 
 The scribe folder contains:
 
-- `models.json` allowing you to configure your models.
-- `.env` file for setting ENV variables (optional).
-- `logs/` folder for logging (optional).
 - All your prompts (`.md` files) in various subfolders.
+- `models.json` allowing configuration of models.
+- `.env` file for setting ENV variables (optional, can be set with other means).
+- `logs/` folder for logging (optional).
 
 ### Enabling models
 

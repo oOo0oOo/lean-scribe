@@ -18,6 +18,10 @@ vscode.window.onDidChangeActiveTextEditor((editor) => {
     }
 });
 
+export function hasCurrentLeanEditor(): boolean {
+    return !!currentLeanEditor;
+}
+
 // Prepare variables for context-aware prompt rendering
 export async function prepareAllPromptVariables(prompt: Prompt): Promise<any> {
     const required = extractPromptVariables(prompt.path);

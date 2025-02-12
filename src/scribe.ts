@@ -13,6 +13,7 @@ import { getPriceAndLoggingSettings, loadMostRecentLeanTextEditor, loadWorkspace
 import { historyManager } from './history';
 import { AIMessageChunk } from '@langchain/core/messages';
 import { configManager } from './configManager';
+import { hasCurrentLeanEditor } from './prompt/variables';
 
 export class Scribe {
     private static instance: Scribe;
@@ -249,12 +250,18 @@ export class Scribe {
                     break;
 
                 case 'render_prompt':
+                    if (!hasCurrentLeanEditor()) {
+                        vscode.window.showErrorMessage('No active Lean editor found. Please open a .lean file.');
+                        return;
+                    }
+
                     const prompt = message.path
                         ? await this.promptManager.getPrompt(
                             path.resolve(path.dirname(message.prompt.path), message.path)
                         )
                         : message.prompt;
                     const rendered = await this.promptManager.renderPrompt(prompt.path);
+
                     let logUri2 = "";
                     if (settings[1]) {
                         let logMsg = `Rendered ${prompt.shortPath}\n`;

@@ -4,31 +4,34 @@ const path = require('path');
 const os = require('os');
 
 const sourceDir = path.join(__dirname, '..', 'example_scribe_folder');
-const targetFolder = path.join(os.homedir(), 'scribe');
+const targetDir = path.join(os.homedir(), 'scribe');
 
-async function copyFiles() {
-  let files;
+async function copyFiles(srcDir, destDir) {
+  let entries;
   
   try {
-    files = await fs.readdir(sourceDir);
+    entries = await fs.readdir(srcDir, { withFileTypes: true });
   } catch (err) {
-    console.error(`Error reading directory ${sourceDir}: ${err.message}`);
+    console.error(`Error reading directory ${srcDir}: ${err.message}`);
     return;
   }
 
-  for (const file of files) {
-    if (file === '.env') {
-        continue;
-    }
-    const sourcePath = path.join(sourceDir, file);
-    const destPath = path.join(targetFolder, file);
-    
-    try {
-      await fs.copyFile(sourcePath, destPath);
-    } catch (err) {
-      console.error(`Error copying ${sourcePath} to ${destPath}: ${err.message}`);
+  await fs.mkdir(destDir, { recursive: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(srcDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
+
+    if (entry.isDirectory()) {
+      await copyFiles(srcPath, destPath);
+    } else if (entry.isFile() && entry.name !== '.env') {
+      try {
+        await fs.copyFile(srcPath, destPath);
+      } catch (err) {
+        console.error(`Error copying ${srcPath} to ${destPath}: ${err.message}`);
+      }
     }
   }
 }
 
-copyFiles();
+copyFiles(sourceDir, targetDir);

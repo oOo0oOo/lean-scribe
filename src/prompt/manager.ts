@@ -47,11 +47,17 @@ export class PromptManager {
         if (!fUri) {
             return;
         }
-        const files = await vscode.workspace.fs.readDirectory(fUri);
+        await this.scanDirectory(fUri);
+    }
+
+    private async scanDirectory(dirUri: vscode.Uri) {
+        const files = await vscode.workspace.fs.readDirectory(dirUri);
 
         for (const [name, type] of files) {
-            if (type === vscode.FileType.File && name.endsWith('.md')) {
-                const uri = vscode.Uri.joinPath(fUri, name);
+            const uri = vscode.Uri.joinPath(dirUri, name);
+            if (type === vscode.FileType.Directory) {
+                await this.scanDirectory(uri);
+            } else if (type === vscode.FileType.File && name.endsWith('.md')) {
                 await this.indexPrompt(uri);
             }
         }
