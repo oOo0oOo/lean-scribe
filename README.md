@@ -2,7 +2,15 @@
 
 Lean Scribe is a VSCode extension for rendering and running context-rich Lean 4 prompts.
 
-Lean Scribe is dependent on the official [Lean 4 VSCode extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4).
+Lean Scribe has the official [Lean 4 VSCode extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4) as a dependency.
+
+## Installing Lean Scribe
+
+1. Open the extensions tab (`Ctrl-Shift-X`).
+2. Search and install the [Lean Scribe](https://marketplace.visualstudio.com/items?itemName=oliverdressler.lean-scribe) VSCode extension.
+3. Setup Lean Scribe folder (`Ctrl+Shift+P` -> `Lean Scribe: Setup Scribe Folder`).
+4. Show Lean Scribe (`Ctrl+Shift+P` -> `Lean Scribe: Show`).
+5. Render your first prompt!
 
 ## Features
 
@@ -17,14 +25,6 @@ Lean Scribe is dependent on the official [Lean 4 VSCode extension](https://marke
 ### Define prompts as shareable markdown files with variables
 
 ![Define prompts as markdown files](images/context_rich_prompts.png)
-
-## Installing Lean Scribe
-
-1. Install the [Lean 4 VSCode extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4).
-2. Install the [Lean Scribe VSCode extension](https://marketplace.visualstudio.com/items?itemName=oliverdressler.lean-scribe).
-3. Setup Lean Scribe folder (`Ctrl+Shift+P` -> `Lean Scribe: Setup Scribe Folder`).
-4. Show Lean Scribe (`Ctrl+Shift+P` -> `Lean Scribe: Show`).
-5. Render your first prompt!
 
 ## Scribe folder
 
@@ -45,26 +45,32 @@ The scribe folder contains:
 - `.env` file for setting ENV variables (optional, can be set with other means).
 - `logs/` folder for logging (optional).
 
+**ATTENTION!** Your keys are SECRET! Never commit/share this .env file to a public repository!
+
 ### Enabling models
 
 Models are automatically enabled, if the correct ENV variable is set.
-Update the values in the `scribe_folder/.env` file, or set them yourself.
 
-ATTENTION! NEVER commit this .env file!
+EITHER:
+
+- Update the values in the `scribe_folder/.env` file
+- Or set the environment variables in another way.
 
 ## Models
 
 Lean Scribe uses [LangChain](https://js.langchain.com/) for LLM integration and currently supports models from the following providers:
 
-- Anthropic
-- Fireworks.ai
-- Google
-- OpenAI
+- Anthropic (e.g Claude 3.5)
+- Fireworks.ai (e.g. Deepseek R1)
+- Google (e.g. Gemini 2.0 Flash)
+- OpenAI (e.g. GPT o3-mini)
 
 Models are configured in the `scribe_folder/models.json` file.
 You can also set other model params like temperature using the params:
 
 `params = {"model": "gpt-4o-mini", "temperature": 0.9}`
+
+**ATTENTION!** Prices in models.json are not reliable, you need to update them manually.
 
 ## Prompt Templating
 
@@ -109,14 +115,14 @@ Read more about templating below, or check out the [example prompts](https://git
 
 ## {% scribe "" %} tag
 
-Signify a valid prompt.
+Each valid Lean Scribe prompt has to contain the `scribe` tag.
 
 ```jinja
 {% scribe "Prompt description", "follow-up.md" %}
 ```
 
 - The first argument is the prompt description.
-- The second argument is an optional follow-up prompt (relative to the current prompt).
+- The second argument is an optional follow-up prompt (path is relative to the current prompt).
 
 ## Variables
 
