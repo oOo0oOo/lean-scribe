@@ -2,35 +2,37 @@
 
 Lean Scribe is a VSCode extension for rendering and running context-rich Lean 4 prompts.
 
-Lean Scribe is meant to be used alongside the [Lean 4 VSCode extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4).
+Lean Scribe is dependent on the official [Lean 4 VSCode extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4).
 
 ## Features
 
 ### Render context-rich prompts
 
-![Render context-rich prompts](https://github.com/oOo0oOo/lean-scribe/blob/main/images/render_prompts.png)
+![Render context-rich prompts](images/render_prompts.png)
 
 ### Query multiple state-of-the-art large language models
 
-![Query multiple state-of-the-art models](https://github.com/oOo0oOo/lean-scribe/blob/main/images/multiple_llms.png)
+![Query multiple state-of-the-art models](images/multiple_llms.png)
 
 ### Define prompts as shareable markdown files with variables
 
-![Define prompts as markdown files](https://github.com/oOo0oOo/lean-scribe/blob/main/images/context_rich_prompts.png)
+![Define prompts as markdown files](images/context_rich_prompts.png)
 
 ## Installing Lean Scribe
 
-1. Install the [Lean 4 VSCode extension](vscode:extension/leanprover.lean4).
-2. Install the [Lean Scribe VSCode extension](vscode:extension/oliverdressler.lean-scribe).
+1. Install the [Lean 4 VSCode extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4).
+2. Install the [Lean Scribe VSCode extension](https://marketplace.visualstudio.com/items?itemName=oliverdressler.lean-scribe).
 3. Setup Lean Scribe folder (`Ctrl+Shift+P` -> `Lean Scribe: Setup Scribe Folder`).
 4. Show Lean Scribe (`Ctrl+Shift+P` -> `Lean Scribe: Show`).
 5. Render your first prompt!
 
 ## Scribe folder
 
-Lean Scribe uses a global folder for storage.
+Lean Scribe uses a global folder for storage. It is highly recommended to do the initial setup via the command:
 
-Default location is the home directory:
+`Ctrl+Shift+P` -> `Lean Scribe: Setup Scribe Folder`
+
+Default location is the home directory specific to your OS:
 
 - Linux: `/home/username/scribe/`
 - Windows: `C:\Users\username\scribe\`
