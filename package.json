@@ -3,7 +3,7 @@
   "displayName": "Lean Scribe",
   "description": "Render and run context-rich Lean 4 prompts.",
   "version": "0.0.1",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "publisher": "oliverdressler",
   "icon": "images/icon.png",
   "repository": {
