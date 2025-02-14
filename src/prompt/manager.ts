@@ -54,6 +54,10 @@ export class PromptManager {
         const files = await vscode.workspace.fs.readDirectory(dirUri);
 
         for (const [name, type] of files) {
+            if (type === vscode.FileType.Directory && name === "logs") {
+                continue;
+            }
+
             const uri = vscode.Uri.joinPath(dirUri, name);
             if (type === vscode.FileType.Directory) {
                 await this.scanDirectory(uri);
