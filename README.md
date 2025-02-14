@@ -14,7 +14,7 @@ Lean Scribe has the official [Lean 4 VSCode extension](https://marketplace.visua
 
 ## Features
 
-### Render context-rich prompts
+### Render context-rich prompts using the current open Lean 4 file
 
 ![Render context-rich prompts](images/render_prompts.png)
 
@@ -41,8 +41,8 @@ Default location is the home directory specific to your OS:
 The scribe folder contains:
 
 - All your prompts (`.md` files) in various subfolders.
-- `models.json` allowing configuration of models.
-- `.env` file for setting ENV variables (optional, can be set with other means).
+- [models.json](https://github.com/oOo0oOo/lean-scribe/blob/main/example_scribe_folder/models.json) allowing configuration of models.
+- [.env](https://github.com/oOo0oOo/lean-scribe/blob/main/example_scribe_folder/.env) file for setting ENV variables (optional, can be set with other means).
 - `logs/` folder for logging (optional).
 
 **ATTENTION!** Your keys are SECRET! Never commit/share this .env file to a public repository!
@@ -135,9 +135,12 @@ Each valid Lean Scribe prompt has to contain the `scribe` tag.
 - **cursor**: Current cursor position in the file (line:column).
 - **selection**: Currently selected text in the editor.
 - **diagnostics**: Collated error, warning, and info messages.
+- **errors**: Error messages.
+- **warnings**: Warning messages.
+- **infos**: Info messages.
 - **goal**: Lean4 proof goal at the current cursor position.
 - **term_goal**: Lean4 term goal at the current cursor position.
-- **hover**: Hover information from the language server.
+- **hover**: Hover information at the cursor position.
 - **import_paths**: Mapped import URIs to workspace paths.
 - **import_files_md**: Formatted import text for MD output.
 - **symbols**: Document symbols for the current file.
@@ -210,6 +213,10 @@ Note: The path to the prompt is relative to the current prompt.
 
 NOTE: For now, the HTML for this button is part of the sent prompt.
 
+### Tactics Output
+
+Output from tactics (e.g. `simp?`) can be included in the prompt via `{{ infos }}` or `{{ diagnostics }}` like other messages.
+
 ## Settings (VSCode)
 
 Lean Scribe has a few settings that can be configure via VSCode settings.
@@ -232,3 +239,19 @@ Color scheme to use for highlighting code blocks in prompts. See [here](https://
 ### Logging
 
 Enable logging prompts and replies to a file. Logs are stored in the `scribe_folder/logs/` directory in daily files and can get quite large.
+
+## Development
+
+### Planned Features
+
+- Support for local models via [Ollama](https://js.langchain.com/docs/integrations/chat/ollama/).
+- More variables (LSP, documentation, loogle, ...) and filters.
+- "Raw" variables allowing for `{{ diagnostics_raw[2] }}` or `{{ goal_raw[1] }}`.
+
+### Potential Features
+
+- Automatic prompt chains. Requires automatic: Reply parsing, editor interaction, conditional actions, ...
+
+### Known Issues
+
+- Code highlighting color scheme is not always correct. It sometimes falls back to highlight.js default.
