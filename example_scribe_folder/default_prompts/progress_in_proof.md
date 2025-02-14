@@ -7,10 +7,6 @@
 You are an advanced AI that has studied all known mathematics.
 Make progress in this Lean 4 proof.
 
-## Imported Files
-
-{{ import_files_md }}
-
 ## Code Context
 
 {{ file_name }}:
