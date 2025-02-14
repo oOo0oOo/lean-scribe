@@ -88,7 +88,7 @@ Explain this lean file to me:
 {{ file_md }} 
 ```
 
-The scribe tag plus a description tell Lean Scribe that this is a valid prompt.
+The scribe tag plus a description mark a valid Lean Scribe prompt.
 `{{ file_md }}` is a variable that will be replaced with the content of the file in a neat markdown code block.
 
 Let's expand the previous example:
@@ -143,7 +143,7 @@ Each valid Lean Scribe prompt has to contain the `scribe` tag.
 - **hover**: Hover information at the cursor position.
 - **hover_all**: All hover annotations in the file. **Very powerful, slow, and large!**
 - **import_paths**: Mapped import URIs to workspace paths.
-- **import_files_md**: Formatted import text for MD output. **Very large!**
+- **import_files_md**: Formatted import text for MD output. **Large!**
 - **symbols**: Document symbols for the current file.
 - **history(n)**: n >= 0. The nth most recent message (only prompts and replies).
 - **reply**: The last reply message.
@@ -234,6 +234,24 @@ NOTE: For now, the HTML for this button is part of the sent prompt.
 
 Output from tactics (e.g. `simp?`) can be included in the prompt via `{{ infos }}` or `{{ diagnostics }}` like other messages.
 
+### Inheritance and Includes
+
+Jinja provides powerful inheritance and include functionality. See [here](https://mozilla.github.io/nunjucks/templating.html) for more details.
+
+Example:
+
+```jinja
+{% extends "base_prompt.md" %}
+
+{% block system_prompt %}
+[[system]]
+This block overrides the system_prompt block in base_prompt.md.
+[[system]]
+{% endblock %}
+
+{% include "another_prompt.md" %}
+```
+
 ## Settings (VSCode)
 
 Lean Scribe has a few settings that can be configure via VSCode settings.
@@ -263,6 +281,7 @@ Enable logging prompts and replies to a file. Logs are stored in the `scribe_fol
 
 - Support for local models via [Ollama](https://js.langchain.com/docs/integrations/chat/ollama/).
 - More variables (LSP, documentation, loogle, ...) and filters.
+- `{{ url("https://example.com") }}`: Embedd URL content. It's surprisingly hard because Jinja doesnt support async.
 - "Raw" variables allowing for `{{ diagnostics_raw[2] }}` or `{{ goal_raw[1] }}`.
 
 ### Potential Features
