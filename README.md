@@ -96,7 +96,7 @@ Let's expand the previous example:
 ```jinja
 {% scribe "Explain a lean file." %}
 
-You are an AI that has studied all of known mathematics.
+You are an AI that has studied all known mathematics.
 
 Explain this lean file to me:
 {{ file | remove_initial_comment | md }}
@@ -182,9 +182,25 @@ The last message contained a code block.
 {% endif %}
 ```
 
-### remove_think
+### remove_tag
 
-Remove the content in the `<think>` tags `</think>`. This is typically returned by Deepseek R1.
+Remove tags and their contained content from a string.
+
+```jinja
+{{ file | remove_tag("<think>", "</think>") }}
+```
+
+Example:
+
+Remove the `<think>` tags `</think>` returned by Deepseek R1.
+
+### select_tag
+
+Return the content between two tags (not including the tags).
+
+```jinja
+{{ file | select_tag("|||StartOfmyCustomTag|||", ".-.-endOfMyCustomTag;)") }}
+```
 
 ## Misc
 

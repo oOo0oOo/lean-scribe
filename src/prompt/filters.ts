@@ -34,9 +34,14 @@ export function contains(str: string, substring: string): boolean {
     return str.includes(substring);
 }
 
-export function removeThink(code: string): string {
-    // Remove anything btw <think> and </think>. This is relevant for Deepseek.
-    return code.replace(/<think>[\s\S]*?<\/think>/g, '');
+export function removeTag(code: string, start: string, end: string): string {
+    return code.replace(new RegExp(start + '[\\s\\S]*?' + end, 'g'), '');
+}
+
+export function selectTag(code: string, start: string, end: string): string {
+    const regex = new RegExp(start + '([\\s\\S]*?)' + end);
+    const match = code.match(regex);
+    return match ? match[1] : '';
 }
 
 export function setupCustomFilters(env: any): void {
@@ -44,5 +49,6 @@ export function setupCustomFilters(env: any): void {
     env.addFilter('md', strToMarkDown);
     env.addFilter('remove_initial_comment', removeInitialComment);
     env.addFilter('contains', contains);
-    env.addFilter('remove_think', removeThink);
+    env.addFilter('remove_tag', removeTag);
+    env.addFilter('select_tag', selectTag);
 }
