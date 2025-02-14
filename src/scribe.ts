@@ -14,6 +14,7 @@ import { historyManager } from './history';
 import { AIMessageChunk } from '@langchain/core/messages';
 import { configManager } from './configManager';
 import { hasCurrentLeanEditor } from './prompt/variables';
+import { isLean4ExtensionLoaded } from './prompt/lsp';
 
 export class Scribe {
     private static instance: Scribe;
@@ -264,6 +265,12 @@ export class Scribe {
                     break;
 
                 case 'render_prompt':
+                    // Check for active Lean extension and active Lean editor
+                    if (!isLean4ExtensionLoaded()) {
+                        vscode.window.showErrorMessage('Wait for the Lean 4 extension to load.');
+                        return;
+                    }
+
                     if (!hasCurrentLeanEditor()) {
                         vscode.window.showErrorMessage('No active Lean editor found. Please open a .lean file.');
                         return;

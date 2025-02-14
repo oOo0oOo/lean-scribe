@@ -17,12 +17,11 @@ class LSPClient {
         return LSPClient.instance;
     }
 
-    public static async getEditorApi(): Promise<any> {
-        const instance = LSPClient.getInstance();
-        if (!instance.editorApi) {
-            await instance.loadLean4Extension();
+    public async getEditorApi(): Promise<any> {
+        if (!this.editorApi) {
+            await this.loadLean4Extension();
         }
-        return instance.editorApi;
+        return this.editorApi;
     }
 
     private async loadLean4Extension() {
@@ -41,6 +40,12 @@ class LSPClient {
     }
 }
 
+const lspClient = LSPClient.getInstance();
+
+export function isLean4ExtensionLoaded(): boolean {
+    return !!lspClient.editorApi;
+}
+
 export class LSPDocumentClient {
     private documentUri: string = "";
     private documentUriVSCode: vscode.Uri | undefined;
@@ -51,7 +56,7 @@ export class LSPDocumentClient {
     async initialize(editor: vscode.TextEditor) {
         this.documentUriVSCode = editor.document.uri;
         this.documentUri = this.documentUriVSCode.toString();
-        this.editorApi = await LSPClient.getEditorApi();
+        this.editorApi = await lspClient.getEditorApi();
     }
 
     private async request(method: string, params: any): Promise<any> {
@@ -82,7 +87,9 @@ export class LSPDocumentClient {
 
     async getTermGoal(line: number, character: number): Promise<string> {
         const goal = await this.requestPos("$/lean/plainTermGoal", line, character);
-        if (!goal) return "no term goal";
+        if (!goal) {
+            return "no term goal";
+        }
         return "```lean\n" + goal?.goal + "\n```";
     }
 
@@ -110,21 +117,43 @@ export class LSPDocumentClient {
         return [...new Set(extractNames(symbols))];
     }
 
-    async getImportUris(): Promise<string[]> {
+    async getImportUrisUnreliable(): Promise<string[]> {
+        // Unfortunately this is not reliable. Not all `import` folding ranges found: E.g. Mathlib/Analysis/Convex/EGauge.lean
         // Find the first section [kind: imports], get definition uri for each line
         const importUris: string[] = [];
         const ranges = await this.request("textDocument/foldingRange", {});
-        if (!ranges) return [];
+        if (!ranges) {
+            return [];
+        }
 
         for (const range of ranges) {
             if (range.kind === "imports") {
                 for (let line = range.startLine; line <= range.endLine; line++) {
-                    const definition = await this.requestPos("textDocument/definition", line, 7);
+                    const definition = await this.requestPos("textDocument/definition", line, 10);
                     importUris.push(definition[0].targetUri);
                 }
             }
         }
-        return importUris;
+        return [...new Set(importUris)];
+    }
+
+    async getImportUris(): Promise<string[]> {
+        const fileUri = this.documentUriVSCode ?? vscode.Uri.parse(this.documentUri);
+        const fileText = (await vscode.workspace.fs.readFile(fileUri)).toString();
+
+        const matches = [...fileText.matchAll(/^import\s+([^\s]+)/gm)];
+        const uris = await Promise.all(
+            matches.map(async (match) => {
+                const line = fileText.substring(0, match.index!).split('\n').length - 1;
+                const lineStart = fileText.lastIndexOf('\n', match.index!);
+                const baseColumn = lineStart === -1 ? match.index! : match.index! - (lineStart + 1);
+                const character = baseColumn + match[0].indexOf(match[1]);
+                const definition = await this.requestPos("textDocument/definition", line, character);
+                return definition?.[0]?.targetUri;
+            })
+        );
+
+        return [...new Set(uris.filter((uri): uri is string => !!uri))];
     }
 
     async getImportFiles(importUris: string[]): Promise<string[]> {
