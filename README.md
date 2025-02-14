@@ -141,8 +141,9 @@ Each valid Lean Scribe prompt has to contain the `scribe` tag.
 - **goal**: Lean4 proof goal at the current cursor position.
 - **term_goal**: Lean4 term goal at the current cursor position.
 - **hover**: Hover information at the cursor position.
+- **hover_all**: All hover annotations in the file. **Very powerful, slow, and large!**
 - **import_paths**: Mapped import URIs to workspace paths.
-- **import_files_md**: Formatted import text for MD output.
+- **import_files_md**: Formatted import text for MD output. **Very large!**
 - **symbols**: Document symbols for the current file.
 - **history(n)**: n >= 0. The nth most recent message (only prompts and replies).
 - **reply**: The last reply message.

@@ -153,7 +153,24 @@ export function escapeCodeBlocks(text: string): string {
     return text.replace(/```/g, '\\`\\`\\`');
 }
 
-export function cleanUpReply(text: string): string {
+export function cleanHoverAnnotation(text: string): string {
+    // Remove all /--, -/, ***, and unnecessary double newlines
+    text = text
+        .replace(/\/--/g, "")
+        .replace(/\/-/g, "")
+        .replace(/--\//g, "")
+        .replace(/-\//g, "")
+        .replace(/\*\*\*/g, "")
+        .replace(/\n\n/g, "\n");
+
+    // Remove all ```lean () ``` code blocks but not the code itself
+    text = text.replace(/```lean([\s\S]*?)```/g, '$1');
+
+    // Escape code blocks and trim whitespace
+    return escapeCodeBlocks(text).trim();
+}
+
+export function cleanReply(text: string): string {
     // Remove markdown code block if the whole answer is wrapped in it
     if (text.startsWith('```markdown') && text.endsWith('```')) {
         text = text.slice(11, -3);

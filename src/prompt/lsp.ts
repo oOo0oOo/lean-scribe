@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { escapeCodeBlocks, formatRange, urisToWorkspacePaths } from "../utils";
+import { cleanHoverAnnotation, escapeCodeBlocks, formatRange, urisToWorkspacePaths } from "../utils";
 
 class LSPClient {
     private static instance: LSPClient;
@@ -176,5 +176,72 @@ export class LSPDocumentClient {
             md += `${paths[i]}\n\`\`\`lean\n${importFiles[i]}\n\`\`\`\n`;
         }
         return md;
+    }
+
+    async getHoverAll(): Promise<string> {
+        // Get folding ranges, to skip comments and imports
+        const ranges = await this.request("textDocument/foldingRange", {});
+        let forbiddenLines: number[] = [];
+        if (ranges) {
+            for (const range of ranges) {
+                if (range.kind === "comment" || range.kind === "imports") {
+                    for (let line = range.startLine; line <= range.endLine; line++) {
+                        forbiddenLines.push(line);
+                    }
+                }
+            }
+        }
+
+        // Read all lines
+        const file = (await vscode.workspace.fs.readFile(this.documentUriVSCode!)).toString();
+        const lines = file.split('\n');
+        const numLines = lines.length;
+
+        function rangeToIndex(range: any): number {
+            return lines.slice(0, range.line).reduce((acc, lineText) => acc + lineText.length + 1, 0) + range.character;
+        }
+
+        // Step through every character on non-forbidden lines
+        let line = 0;
+        let character = 0;
+        let hoverData: Map<string, string> = new Map();
+        while (line < numLines) {
+            if (forbiddenLines.includes(line)) {
+                line++;
+                character = 0;
+                continue;
+            }
+
+            const hover = await this.requestPos("textDocument/hover", line, character);
+            if (hover) {
+                const annotation = hover.contents.value;
+                const hoverText = file.substring(
+                    rangeToIndex(hover.range.start),
+                    rangeToIndex(hover.range.end)
+                );
+                hoverData.set(hoverText.trim(), annotation);
+
+                // If the hoverText contains no spaces, skip to the end of the range
+                if (!hoverText.includes(' ')) {
+                    line = hover.range.end.line;
+                    character = hover.range.end.character;
+                    continue;
+                }
+            }
+
+            // Make only a single character step
+            character++;
+            if (character >= lines[line].length) {
+                line++;
+                character = 0;
+            }
+        }
+
+        // Format hover data
+        let md = "";
+        for (const [hoverText, annotation] of hoverData) {
+            md += `${hoverText}\n/--\n${cleanHoverAnnotation(annotation)}\n-/\n`;
+        }
+        return "```lean\n" + md + "\n```";
     }
 }

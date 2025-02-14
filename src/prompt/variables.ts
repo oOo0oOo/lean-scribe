@@ -143,6 +143,10 @@ export async function prepareAllPromptVariables(prompt: Prompt): Promise<any> {
                 const symbols = await lsp.getDocumentSymbols();
                 variables['symbols'] = symbols;
                 break;
+            case 'hover_all':
+                const hoverAll = await lsp.getHoverAll();
+                variables['hover_all'] = hoverAll;
+                break;
         }
     }
     return variables;

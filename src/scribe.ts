@@ -9,7 +9,7 @@ import { PromptManager } from './prompt/manager';
 import { accountingManager } from './accounting';
 import { chatModerator } from './chat/moderator';
 import { logger } from './logger';
-import { getPriceAndLoggingSettings, loadMostRecentLeanTextEditor, loadWorkspaceEnv, cleanUpReply } from './utils';
+import { getPriceAndLoggingSettings, loadMostRecentLeanTextEditor, loadWorkspaceEnv, cleanReply } from './utils';
 import { historyManager } from './history';
 import { AIMessageChunk } from '@langchain/core/messages';
 import { configManager } from './configManager';
@@ -244,7 +244,7 @@ export class Scribe {
                         }
                     }
 
-                    const final = cleanUpReply(accumulatedChunks.content.toString());
+                    const final = cleanReply(accumulatedChunks.content.toString());
                     let logUri = settings[1] ? logger.log(`Prompted ${message.model}:\n${final}\n`) : "";
                     historyManager.addReply(final, message.model);
 
