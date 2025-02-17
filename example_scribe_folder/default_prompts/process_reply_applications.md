@@ -1,4 +1,6 @@
-{% scribe "Follow up: Process the replies and find applications for the described Lean 4 file." %}
+{% scribe %}
+description: Follow up: Process the replies and find applications for the described Lean 4 file.
+{% endscribe %}
 
 # Find Applications for the Described Lean 4 File
 

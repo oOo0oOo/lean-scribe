@@ -1,20 +1,23 @@
 import { historyManager } from "../history";
 
+
 class ScribeExtension {
     tags = ['scribe'];
 
-    parse(parser: any, nodes: any, lexer: any): any {
-        const tok = parser.nextToken();
-        const args = parser.parseSignature(null, true);
+    parse(parser: any, nodes: any, lexer: any) {
+        var tok = parser.nextToken();
+        var args = parser.parseSignature(null, true);
         parser.advanceAfterBlockEnd(tok.value);
-        return new nodes.CallExtension(this, 'run', args);
-    }
+        parser.parseUntilBlocks('endscribe');
+        parser.advanceAfterBlockEnd();
+        return new nodes.CallExtension(this, 'run', args, []);
+    };
 
-    run(context: any, description: string, followup: string): string {
-        // context.ctx.description = description; // Not sure this is needed
+    run(context: any) {
         return "";
-    }
+    };
 }
+
 
 class PromptExtension {
     tags = ['prompt'];
@@ -31,7 +34,9 @@ class PromptExtension {
     }
 }
 
+
 const getHistoryItem = (index: number): string => historyManager.getHistoryItem(index)?.text || "";
+
 
 export function setupNunjucksEnvironment(env: any): void {
     env.addExtension('ScribeExtension', new ScribeExtension());

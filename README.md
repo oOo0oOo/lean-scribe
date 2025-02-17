@@ -113,16 +113,26 @@ We are now using `filters` to process a variable before rendering.
 
 Read more about templating below, or check out the [example prompts](https://github.com/oOo0oOo/lean-scribe/tree/main/example_scribe_folder).
 
-## {% scribe "" %} tag
+## {% scribe %} tag
 
 Each valid Lean Scribe prompt has to contain the `scribe` tag.
 
 ```jinja
-{% scribe "Prompt description", "follow-up.md" %}
+{% scribe %}
+description: Explain a lean file.
+{% endscribe %}
 ```
 
-- The first argument is the prompt description.
-- The second argument is an optional follow-up prompt (path is relative to the current prompt).
+A valid prompt has to contain a description.
+
+There are additional optional arguments:
+
+{% scribe %}
+description: Explain a lean file.
+follow_up: explain_follow_up.md
+{% endscribe %}
+
+- **follow_up**: Prompt_path (relative), rendered by "Follow-Up" button in replies.
 
 ## Variables
 
@@ -275,18 +285,23 @@ Color scheme to use for highlighting code blocks in prompts. See [here](https://
 
 Enable logging prompts and replies to a file. Logs are stored in the `scribe_folder/logs/` directory in daily files and can get quite large.
 
-## Development
+## Roadmap
+
+This extension is still in the early stages of development. If you encounter any issues please report them on the [GitHub issues page](https://github.com/oOo0oOo/lean-scribe/issues).
+
+ATTENTION: There might be breaking changes to the prompt syntax for a few more weeks!
 
 ### Planned Features
 
 - Support for local models via [Ollama](https://js.langchain.com/docs/integrations/chat/ollama/).
+- Easy sharing of prompts. Possibly via repo links.
 - More variables (LSP, documentation, loogle, ...) and filters.
-- `{{ url("https://example.com") }}`: Embedd URL content. It's surprisingly hard because Jinja doesnt support async.
 - "Raw" variables allowing for `{{ diagnostics_raw[2] }}` or `{{ goal_raw[1] }}`.
 
 ### Potential Features
 
 - Automatic prompt chains. Requires automatic: Reply parsing, editor interaction, conditional actions, ...
+- `{{ url("https://example.com") }}`: Embedd URL content. It's surprisingly hard because nunjucks is sync by default.
 
 ### Known Issues
 

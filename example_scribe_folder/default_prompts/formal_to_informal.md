@@ -1,5 +1,6 @@
-{% scribe "Translate selected formal Lean 4 proof to an informal proof in English." %}
-
+{% scribe %}
+description: Translate selected formal Lean 4 proof to an informal proof in English.
+{% endscribe %}
 # Translate a Lean 4 Proof to an Informal Proof
 
 ## Situation

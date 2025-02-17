@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { renderPrompt } from './renderer';
-import { getScribeFolderUri, removeScribeFolderPath } from '../utils';
+import { getScribeFolderUri, parseScribeBlock, removeScribeFolderPath } from '../utils';
 
 
 export type Prompt = {
@@ -14,16 +14,13 @@ export type Prompt = {
     followUp?: string;
 }
 
+
 export type RenderedPrompt = {
     user: string,
     system?: string,
     followUp?: string,
 }
 
-// Regex to extract description string.
-// {% prompt "Description here" %}
-// Half compliant with " or ' and allow for arbitrary whitespace.
-const metaRegex = /{%\s*scribe\s*["']\s*(.*?)\s*["']\s*(?:,\s*["']\s*(.*?)\s*["'])?\s*%}/;
 
 export class PromptManager {
     private static instance: PromptManager;
@@ -68,44 +65,42 @@ export class PromptManager {
     }
 
     private async indexPrompt(uri: vscode.Uri) {
-        // Short path
         const pPath = uri.fsPath;
-        const shortPath = removeScribeFolderPath(pPath);
-
-        // Open file and extract description
-        const file = await vscode.workspace.fs.readFile(uri);
-        const content = file.toString();
-        const match = metaRegex.exec(content);
-        const desc = match ? match[1] : '';
-        const searchString = (desc + shortPath).toLowerCase();
+        const prompt = await this.getPrompt(pPath);
+        if (!prompt) {
+            return;
+        }
+        const searchString = (prompt.description + prompt.shortPath).toLowerCase();
         this.searchIndex.set(searchString, pPath);
     }
 
-    async getPrompt(pPath: string): Promise<Prompt> {
+    async getPrompt(pPath: string): Promise<Prompt | null> {
         const uri = vscode.Uri.file(pPath);
         const file = await vscode.workspace.fs.readFile(uri);
         const content = file.toString();
+        const meta = parseScribeBlock(content);
+        if (!meta) {
+            return null;
+        }
 
-        const match = metaRegex.exec(content);
-        const desc = match ? match[1] : '';
-        let followup = match && match[2] ? match[2] : undefined;
-
-        // Turn follow from relative to absolute path
-        if (followup) {
+        // Turn follow_up path from relative to absolute
+        let followUp;
+        if (meta.follow_up) {
             const dir = path.dirname(pPath);
-            const followPath = path.resolve(dir, followup);
+            const followPath = path.resolve(dir, meta.follow_up);
             if (fs.existsSync(followPath)) {
-                followup = followPath;
+                followUp = followPath;
             } else {
-                followup = undefined;
+                followUp = undefined;
             }
         }
+
         return {
-            description: desc,
+            description: meta.description,
             path: pPath,
             shortPath: removeScribeFolderPath(pPath),
             template: content,
-            followUp: followup
+            followUp: followUp
         };
     }
 
@@ -116,7 +111,7 @@ export class PromptManager {
         for (const [key, pPath] of this.searchIndex.entries()) {
             if (key.includes(search)) {
                 const prompt = await this.getPrompt(pPath);
-                results.push(prompt);
+                results.push(prompt!);
                 if (results.length >= limit) {
                     break;
                 }
@@ -128,6 +123,6 @@ export class PromptManager {
 
     public async renderPrompt(pPath: string): Promise<RenderedPrompt> {
         const prompt = await this.getPrompt(pPath);
-        return await renderPrompt(prompt);
+        return await renderPrompt(prompt!);
     }
 }

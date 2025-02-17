@@ -1,4 +1,7 @@
-{% scribe "Explain a lean file. Find related mathematical concepts.", "process_reply_applications.md" %}
+{% scribe %}
+description: Explain a lean file. Find related mathematical concepts.
+follow_up: process_reply_applications.md
+{% endscribe %}
 
 # Explain a Lean 4 File
 

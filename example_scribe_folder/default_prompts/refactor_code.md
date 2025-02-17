@@ -1,4 +1,6 @@
-{% scribe "Refactor and simplify selected code section to make it more understandable and maintainable." %}
+{% scribe %}
+description: Refactor and simplify selected code section to make it more understandable and maintainable.
+{% endscribe %}
 
 # Refactor Lean 4 Code
 

@@ -1,4 +1,6 @@
-{% scribe "Formalize the statement of the theorem from the given informal comment." %}
+{% scribe %}
+description: Formalize the statement of the theorem from the given informal comment.
+{% endscribe %}
 
 # Formalize a Lean 4 Theorem Statement
 

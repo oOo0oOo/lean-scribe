@@ -181,3 +181,47 @@ export function cleanReply(text: string): string {
 
     return text;
 }
+
+export type PromptMeta = {
+    description: string;
+    follow_up: string | null;
+    post_process: string | null;
+}
+
+export function parseScribeBlock(text: string): PromptMeta | null {
+    const scribeBlock = text.match(/{% scribe %}([\s\S]*?){% endscribe %}/);
+    if (!scribeBlock) {
+        return null;
+    }
+
+    const meta = scribeBlock[1].split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .map(line => {
+            // Split on the first ":"
+            const index = line.indexOf(':');
+            if (index === -1) {
+                return [line, ''];
+            }
+            const key = line.slice(0, index).trim();
+            const value = line.slice(index + 1).trim();
+            return [key, value];
+        });
+
+    const metaObject = meta.reduce((acc, [key, value]) => {
+        switch (key) {
+            case 'description':
+                acc.description = value;
+                break;
+            case 'follow_up':
+                acc.follow_up = value;
+                break;
+            case 'post_process':
+                acc.post_process = value;
+                break;
+        }
+        return acc;
+    }, {} as PromptMeta);
+
+    return metaObject;
+}
