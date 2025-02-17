@@ -128,11 +128,20 @@ export async function prepareAllPromptVariables(prompt: Prompt): Promise<any> {
             case 'term_goal':
                 variables['term_goal'] = await lsp.getTermGoal(cursorPos[0], cursorPos[1]);
                 break;
+            case 'sorry_goals':
+                const sorryGoals = await lsp.getSorryGoals();
+                variables['sorry_goals'] = sorryGoals;
+                break;
 
             // LSP
             case 'hover':
                 variables['hover'] = await lsp.getHover(cursorPos[0], cursorPos[1]);
                 break;
+            case 'hover_all':
+                const hoverAll = await lsp.getHoverAll();
+                variables['hover_all'] = hoverAll;
+                break;
+
             case 'import_paths':
                 const res = await lsp.getImportUris();
                 variables['import_paths'] = urisToWorkspacePaths(res).join("\n");
@@ -144,10 +153,6 @@ export async function prepareAllPromptVariables(prompt: Prompt): Promise<any> {
             case 'symbols':
                 const symbols = await lsp.getDocumentSymbols();
                 variables['symbols'] = symbols;
-                break;
-            case 'hover_all':
-                const hoverAll = await lsp.getHoverAll();
-                variables['hover_all'] = hoverAll;
                 break;
         }
     }

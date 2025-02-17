@@ -159,8 +159,9 @@ hide: true
 - **errors**: Error messages.
 - **warnings**: Warning messages.
 - **infos**: Info messages.
-- **goal**: Lean4 proof goal at the current cursor position.
-- **term_goal**: Lean4 term goal at the current cursor position.
+- **goal**: Proof goal(s) at the current cursor position.
+- **term_goal**: Term goal at the current cursor position.
+- **sorry_goals**: All sorries and their goals.
 - **hover**: Hover information at the cursor position.
 - **hover_all**: All hover annotations in the file. **Very powerful, slow, and large!**
 - **import_paths**: Mapped import URIs to workspace paths.

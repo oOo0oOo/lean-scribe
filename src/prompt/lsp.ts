@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { cleanHoverAnnotation, escapeCodeBlocks, formatRange, urisToWorkspacePaths } from "../utils";
+import { cleanHoverAnnotation, escapeCodeBlocks, formatRange, processTokens, urisToWorkspacePaths } from "../utils";
 
 class LSPClient {
     private static instance: LSPClient;
@@ -49,6 +49,7 @@ export function isLean4ExtensionLoaded(): boolean {
 export class LSPDocumentClient {
     private documentUri: string = "";
     private documentUriVSCode: vscode.Uri | undefined;
+    private documentText: string = "";
     private editorApi: any;
 
     constructor() { }
@@ -56,6 +57,7 @@ export class LSPDocumentClient {
     async initialize(editor: vscode.TextEditor) {
         this.documentUriVSCode = editor.document.uri;
         this.documentUri = this.documentUriVSCode.toString();
+        this.documentText = editor.document.getText();
         this.editorApi = await lspClient.getEditorApi();
     }
 
@@ -138,14 +140,11 @@ export class LSPDocumentClient {
     }
 
     async getImportUris(): Promise<string[]> {
-        const fileUri = this.documentUriVSCode ?? vscode.Uri.parse(this.documentUri);
-        const fileText = (await vscode.workspace.fs.readFile(fileUri)).toString();
-
-        const matches = [...fileText.matchAll(/^import\s+([^\s]+)/gm)];
+        const matches = [...this.documentText.matchAll(/^import\s+([^\s]+)/gm)];
         const uris = await Promise.all(
             matches.map(async (match) => {
-                const line = fileText.substring(0, match.index!).split('\n').length - 1;
-                const lineStart = fileText.lastIndexOf('\n', match.index!);
+                const line = this.documentText.substring(0, match.index!).split('\n').length - 1;
+                const lineStart = this.documentText.lastIndexOf('\n', match.index!);
                 const baseColumn = lineStart === -1 ? match.index! : match.index! - (lineStart + 1);
                 const character = baseColumn + match[0].indexOf(match[1]);
                 const definition = await this.requestPos("textDocument/definition", line, character);
@@ -193,7 +192,7 @@ export class LSPDocumentClient {
         }
 
         // Read all lines
-        const file = (await vscode.workspace.fs.readFile(this.documentUriVSCode!)).toString();
+        const file = this.documentText;
         const lines = file.split('\n');
         const numLines = lines.length;
 
@@ -209,6 +208,17 @@ export class LSPDocumentClient {
             if (forbiddenLines.includes(line)) {
                 line++;
                 character = 0;
+                continue;
+            }
+
+            // Skip if character is whitespace
+            const char = lines[line][character];
+            if (char === ' ' || char === '\t' || char === '\n') {
+                character++;
+                if (character >= lines[line].length) {
+                    line++;
+                    character = 0;
+                }
                 continue;
             }
 
@@ -243,5 +253,30 @@ export class LSPDocumentClient {
             md += `${hoverText}\n/--\n${cleanHoverAnnotation(annotation)}\n-/\n`;
         }
         return "```lean\n" + md + "\n```";
+    }
+
+    async getSorryGoals(): Promise<string> {
+        const matches = [...this.documentText.matchAll(new RegExp("sorry|admit", 'g'))];
+        const lines = this.documentText.split('\n');
+
+        function indexToCoords(index: number): [number, number] {
+            let line = 0;
+            let character = 0;
+            while (index >= lines[line].length) {
+                index -= lines[line].length + 1;
+                line++;
+            }
+            character = index;
+            return [line, character];
+        }
+
+        let md: string[] = [];
+        for (const match of matches) {
+            const index = match.index!;
+            const [line, character] = indexToCoords(index);
+            const goal = await this.getGoal(line, character);
+            md.push(`Sorry at l${line}:c${character}:\n${goal}`);
+        }
+        return md.join("\n\n");
     }
 }
