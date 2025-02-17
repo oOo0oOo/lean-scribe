@@ -22,6 +22,10 @@ export function hasCurrentLeanEditor(): boolean {
     return !!currentLeanEditor;
 }
 
+export function getCurrentLeanEditor(): vscode.TextEditor {
+    return currentLeanEditor;
+}
+
 // Prepare variables for context-aware prompt rendering
 export async function prepareAllPromptVariables(prompt: Prompt): Promise<any> {
     const required = extractPromptVariables(prompt.path);
@@ -155,11 +159,27 @@ export async function prepareAllPromptVariables(prompt: Prompt): Promise<any> {
                 variables['symbols'] = symbols;
                 break;
         }
+
+        if (varName.startsWith('run_')) {
+            const code = varName.slice(4);
+            const diags = await lsp.runCode(code, [cursorPos[0], cursorPos[1]]);
+            let msg = `### Running \`${code}\` at l${cursorPos[0]}:c${cursorPos[1]}\n\n`;
+            if (diags) {
+                const formatted = formatDiagnostics(diags, false);
+                for (const category in formatted) {
+                    msg += formatted[category] + '\n';
+                }
+            } else {
+                msg += "No new diagnostics found.";
+            }
+            variables[varName] = msg;
+        }
     }
     return variables;
 };
 
 const varPattern = /{{\s*([^|}\s]+)\s*(?:\|[^}]+)?\s*}}/g;
+const runPattern = /{% run\s+"(.*)"\s+%}/g;
 const extendPattern = /{%\s+extends\s+["'](.*)["']\s+%}/;
 
 function extractPromptVariables(path: string): string[] {
@@ -178,6 +198,12 @@ function extractPromptVariables(path: string): string[] {
         const path = getScribeFolderPath() + '/' + extendMatch[1];
         const extraVars = extractPromptVariables(path);
         variables.push(...extraVars);
+    }
+
+    // Find {% run "code?" %} and create "run_code" variable
+    const runMatches = file.matchAll(runPattern);
+    for (const match of runMatches) {
+        variables.push(`run_${match[1]}`);
     }
 
     return [...new Set(variables)];

@@ -99,28 +99,17 @@ export function countTokens(text: string): number {
     return text.length / 3; // Scientifically proven
 }
 
+export function formatDiagnostics(diagnostics: vscode.Diagnostic[], coordinates: boolean = true): string[] {
+    const groups: Record<number, string[]> = { 0: [], 1: [], 2: [] };
 
-export function formatDiagnostics(diagnostics: vscode.Diagnostic[]): string[] {
-    const warnings: string[] = [];
-    const errors: string[] = [];
-    const infos: string[] = [];
+    diagnostics.forEach(({ message, range, severity }) => {
+        const rangeText = coordinates ? `\n${formatRange(range)}` : '';
+        const diagnosticMsg = `${escapeCodeBlocks(message)}${rangeText}\n`;
+        groups[severity]?.push(diagnosticMsg);
+    });
 
-    for (const { message, range, severity } of diagnostics) {
-        const rangeText = formatRange(range);
-        const diagnosticMsg = `${message}\n${rangeText}\n\n`;
-        switch (severity) {
-            case 0:
-                errors.push(diagnosticMsg);
-                break;
-            case 1:
-                warnings.push(diagnosticMsg);
-                break;
-            case 2:
-                infos.push(diagnosticMsg);
-                break;
-        }
-    }
-    return [errors.join('\n'), warnings.join('\n'), infos.join('\n')];
+    const formatGroup = (msgs: string[]) => msgs.map(msg => `- ${msg}`).join('\n');
+    return [formatGroup(groups[0]), formatGroup(groups[1]), formatGroup(groups[2])];
 }
 
 export function formatRange(range: vscode.Range): string {

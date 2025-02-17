@@ -240,6 +240,22 @@ Your specialty is exactly this file: {{ file_name }}
 
 NOTE: System prompts are not available on some models like "OpenAI o1".
 
+### Run Code
+
+Use the `run` tag to paste code at the cursor position and check for new diagnostics and goals.
+
+```jinja
+{% run "simp" %}
+{% run "aesop" %}
+{% run "omega" %}
+{% run "linarith" %}
+{% run "norm_num" %}
+{% run "rw?" %}
+{% run "apply?" %}
+{% run "exact?" %}
+...
+```
+
 ### Reference other prompt
 
 Use the `prompt` tag to reference another prompt.

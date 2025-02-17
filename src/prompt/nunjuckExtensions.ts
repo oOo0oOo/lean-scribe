@@ -36,6 +36,27 @@ class PromptExtension {
 }
 
 
+class RunExtension {
+    tags = ['run'];
+
+    parse(parser: any, nodes: any, lexer: any): any {
+        const tok = parser.nextToken();
+        const args = parser.parseSignature(null, true);
+        parser.advanceAfterBlockEnd(tok.value);
+        return new nodes.CallExtension(this, 'run', args);
+    }
+
+    run(context: any, code: string): string {
+        const variable = `run_${code}`;
+        const ctx = context.ctx;
+        if (variable in ctx) {
+            return ctx[variable];
+        }
+        return "";
+    }
+}
+
+
 const getHistoryItem = (index: number): string => historyManager.getHistoryItem(index)?.text || "";
 const getUuid = (): string => randomUUID();
 
@@ -43,6 +64,7 @@ const getUuid = (): string => randomUUID();
 export function setupNunjucksEnvironment(env: any): void {
     env.addExtension('ScribeExtension', new ScribeExtension());
     env.addExtension('PromptExtension', new PromptExtension());
+    env.addExtension('RunExtension', new RunExtension());
     env.addGlobal('history', getHistoryItem);
     env.addGlobal('uuid', getUuid);
 }

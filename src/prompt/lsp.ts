@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { cleanHoverAnnotation, escapeCodeBlocks, formatRange, processTokens, urisToWorkspacePaths } from "../utils";
+import { getCurrentLeanEditor } from "./variables";
 
 class LSPClient {
     private static instance: LSPClient;
@@ -278,5 +279,44 @@ export class LSPDocumentClient {
             md.push(`Sorry at l${line}:c${character}:\n${goal}`);
         }
         return md.join("\n\n");
+    }
+
+    async runCode(code: string, position: [number, number]): Promise<vscode.Diagnostic[]> {
+        const diagnosticsBefore = await this.getDiagnostics();
+        const goalBefore = await this.getGoal(position[0], position[1]);
+
+        // Apply the edit using the editor API
+        const editor = getCurrentLeanEditor();
+        const startPos = new vscode.Position(position[0], position[1]);
+        await editor.edit(editBuilder => {
+            editBuilder.insert(startPos, code);
+        });
+
+        // Wait until hover (after the change) is available
+        await this.getHover(position[0] + 3, 0);
+
+        const diagnosticsAfter = await this.getDiagnostics();
+        const newDiagnostics = diagnosticsAfter.filter(d => !diagnosticsBefore.includes(d));
+
+        const codeLength = code.length;
+        const goalAfter = await this.getGoal(position[0], position[1] + codeLength);
+        if (goalBefore !== goalAfter) {
+            newDiagnostics.push({
+                message: `Goal changed: ${goalAfter}`,
+                range: new vscode.Range(
+                    startPos,
+                    new vscode.Position(position[0], position[1] + codeLength)
+                ),
+                severity: vscode.DiagnosticSeverity.Information
+            });
+        }
+
+        // Revert the change
+        const endPos = new vscode.Position(position[0], position[1] + codeLength);
+        await editor.edit(editBuilder => {
+            editBuilder.delete(new vscode.Range(startPos, endPos));
+        });
+
+        return newDiagnostics;
     }
 }

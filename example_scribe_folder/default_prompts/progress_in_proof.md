@@ -32,6 +32,10 @@ Current selection: "{{ selection }}"
 
 {{ diagnostics }}
 
+## Running Code
+
+{% run "simp" %}
+
 ## Task
 
 Write a single line of valid Lean 4 to make progress in this proof at the cursor position.
