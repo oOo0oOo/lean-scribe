@@ -249,11 +249,15 @@ export class Scribe {
                     // Post-process the final message
                     const postProcessPath = message.prompt.postProcess;
                     if (postProcessPath) {
-                        const rendered = await this.promptManager.renderPrompt(
+                        const rendered = await this.promptManager.renderPromptFromPath(
                             postProcessPath,
                             { reply: final }
                         );
-                        final = rendered.user;
+                        if (rendered) {
+                            final = rendered.user;
+                        } else {
+                            vscode.window.showErrorMessage(`Could not find post-process prompt: '${postProcessPath}'.`);
+                        }
                     }
 
                     let logUri = settings[1] ? logger.log(`Prompted ${message.model}:\n${final}\n`) : "";
@@ -287,12 +291,16 @@ export class Scribe {
                         return;
                     }
 
-                    const prompt = message.path
-                        ? await this.promptManager.getPrompt(
-                            path.resolve(path.dirname(message.prompt.path), message.path)
-                        )
-                        : message.prompt;
-                    const rendered = await this.promptManager.renderPrompt(prompt.path);
+                    let prompt = message.prompt;
+                    if (message.path) {
+                        const promptPath = path.resolve(path.dirname(prompt.path), message.path);
+                        prompt = await this.promptManager.getPrompt(promptPath);
+                        if (!prompt) {
+                            vscode.window.showErrorMessage(`Could not find prompt: '${message.path}'.`);
+                            return;
+                        }
+                    }
+                    const rendered = await this.promptManager.renderPrompt(prompt);
 
                     let logUri2 = "";
                     if (settings[1]) {

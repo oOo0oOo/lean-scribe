@@ -81,7 +81,7 @@ export class PromptManager {
         const file = await vscode.workspace.fs.readFile(uri);
         const content = file.toString();
         const meta = parseScribeBlock(content);
-        if (!meta) {
+        if (!meta || !meta.description) {
             return null;
         }
 
@@ -117,8 +117,15 @@ export class PromptManager {
         return results;
     }
 
-    public async renderPrompt(pPath: string, extraVariables: any = {}): Promise<RenderedPrompt> {
+    public async renderPrompt(prompt: Prompt, extraVariables: any = {}): Promise<RenderedPrompt> {
+        return await renderPrompt(prompt, extraVariables);
+    }
+
+    public async renderPromptFromPath(pPath: string, extraVariables: any = {}): Promise<RenderedPrompt | null> {
         const prompt = await this.getPrompt(pPath);
-        return await renderPrompt(prompt!, extraVariables);
+        if (!prompt) {
+            return null;
+        }
+        return await renderPrompt(prompt, extraVariables);
     }
 }
