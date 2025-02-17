@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import path from 'path';
 
 
 export function loadFileInScribeFolder(path: string): string | null {
@@ -77,6 +78,11 @@ export function getScribeFolderUri(): vscode.Uri | null {
     return vscode.Uri.file(scribeFolder);
 }
 
+export function resolveRelativePath(pPath: string, relativePath: string): string | undefined {
+    const dir = path.dirname(pPath);
+    const fullPath = path.resolve(dir, relativePath);
+    return fs.existsSync(fullPath) ? fullPath : undefined;
+}
 
 export function getPriceAndLoggingSettings(): boolean[] {
     const config = vscode.workspace.getConfiguration('lean-scribe');
@@ -182,13 +188,14 @@ export function cleanReply(text: string): string {
     return text;
 }
 
-export type PromptMeta = {
+export type ScribeBlock = {
     description: string;
     follow_up: string | null;
     post_process: string | null;
+    hide: boolean;
 }
 
-export function parseScribeBlock(text: string): PromptMeta | null {
+export function parseScribeBlock(text: string): ScribeBlock | null {
     const scribeBlock = text.match(/{% scribe %}([\s\S]*?){% endscribe %}/);
     if (!scribeBlock) {
         return null;
@@ -219,9 +226,12 @@ export function parseScribeBlock(text: string): PromptMeta | null {
             case 'post_process':
                 acc.post_process = value;
                 break;
+            case 'hide':
+                acc.hide = value === 'true';
+                break;
         }
         return acc;
-    }, {} as PromptMeta);
+    }, {} as ScribeBlock);
 
     return metaObject;
 }

@@ -19,13 +19,15 @@ function initializeNunjucksEnvironment() {
     setupCustomFilters(nunjucksEnv);
 }
 
-export async function renderPrompt(prompt: Prompt): Promise<RenderedPrompt> {
+export async function renderPrompt(prompt: Prompt, extraVariables: any = {}): Promise<RenderedPrompt> {
     if (!nunjucksEnv) {
         initializeNunjucksEnvironment();
     }
 
     const followUp = prompt.followUp;
     const variables = await prepareAllPromptVariables(prompt);
+    Object.assign(variables, extraVariables);
+
     // const rendered = nunjucksEnv.render(prompt.path, variables); // This has some kind of cache!! Doesn't always reload...
     const rendered = nunjucksEnv.renderString(prompt.template, variables);
 

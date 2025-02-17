@@ -83,7 +83,10 @@ Overall, Jinja templating is quite powerful, you can include or even inherit fro
 Let's look at a simple example:
 
 ```jinja
-{% scribe "Explain a lean file." %}
+{% scribe %}
+description: Explain a lean file.
+{% endscribe %}
+
 Explain this lean file to me:
 {{ file_md }} 
 ```
@@ -94,7 +97,9 @@ The scribe tag plus a description mark a valid Lean Scribe prompt.
 Let's expand the previous example:
 
 ```jinja
-{% scribe "Explain a lean file." %}
+{% scribe %}
+description: Explain a lean file.
+{% endscribe %}
 
 You are an AI that has studied all known mathematics.
 
@@ -127,12 +132,18 @@ A valid prompt has to contain a description.
 
 There are additional optional arguments:
 
+```jinja
 {% scribe %}
 description: Explain a lean file.
 follow_up: explain_follow_up.md
+post_process: process_reply.md
+hide: true
 {% endscribe %}
+```
 
 - **follow_up**: Prompt_path (relative), rendered by "Follow-Up" button in replies.
+- **post_process**: Prompt_path (relative), reply is processed by this prompt. Use `{{ reply }}` in this prompt.
+- **hide**: Hide the prompt in the prompt search.
 
 ## Variables
 
@@ -174,7 +185,7 @@ Prefix code with line numbers, optionally aligned.
 
 ### md
 
-Wrap text in \`\`\`lean code block.
+Wrap text in \`\`\`lean code block if not already.
 
 ### remove_initial_comment
 

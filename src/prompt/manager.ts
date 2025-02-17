@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { renderPrompt } from './renderer';
-import { getScribeFolderUri, parseScribeBlock, removeScribeFolderPath } from '../utils';
+import { getScribeFolderUri, parseScribeBlock, removeScribeFolderPath, resolveRelativePath } from '../utils';
 
 
 export type Prompt = {
@@ -12,6 +12,8 @@ export type Prompt = {
     path: string;
     shortPath: string;
     followUp?: string;
+    postProcess?: string;
+    hide: boolean;
 }
 
 
@@ -67,7 +69,7 @@ export class PromptManager {
     private async indexPrompt(uri: vscode.Uri) {
         const pPath = uri.fsPath;
         const prompt = await this.getPrompt(pPath);
-        if (!prompt) {
+        if (!prompt || prompt.hide) {
             return;
         }
         const searchString = (prompt.description + prompt.shortPath).toLowerCase();
@@ -83,24 +85,18 @@ export class PromptManager {
             return null;
         }
 
-        // Turn follow_up path from relative to absolute
-        let followUp;
-        if (meta.follow_up) {
-            const dir = path.dirname(pPath);
-            const followPath = path.resolve(dir, meta.follow_up);
-            if (fs.existsSync(followPath)) {
-                followUp = followPath;
-            } else {
-                followUp = undefined;
-            }
-        }
+        // Turn follow_up and post_process paths from relative to absolute using the helper
+        const followUp = meta.follow_up ? resolveRelativePath(pPath, meta.follow_up) : undefined;
+        const postProcess = meta.post_process ? resolveRelativePath(pPath, meta.post_process) : undefined;
 
         return {
             description: meta.description,
             path: pPath,
             shortPath: removeScribeFolderPath(pPath),
             template: content,
-            followUp: followUp
+            followUp: followUp,
+            postProcess: postProcess,
+            hide: meta.hide
         };
     }
 
@@ -121,8 +117,8 @@ export class PromptManager {
         return results;
     }
 
-    public async renderPrompt(pPath: string): Promise<RenderedPrompt> {
+    public async renderPrompt(pPath: string, extraVariables: any = {}): Promise<RenderedPrompt> {
         const prompt = await this.getPrompt(pPath);
-        return await renderPrompt(prompt!);
+        return await renderPrompt(prompt!, extraVariables);
     }
 }

@@ -244,7 +244,18 @@ export class Scribe {
                         }
                     }
 
-                    const final = cleanReply(accumulatedChunks.content.toString());
+                    let final = cleanReply(accumulatedChunks.content.toString());
+
+                    // Post-process the final message
+                    const postProcessPath = message.prompt.postProcess;
+                    if (postProcessPath) {
+                        const rendered = await this.promptManager.renderPrompt(
+                            postProcessPath,
+                            { reply: final }
+                        );
+                        final = rendered.user;
+                    }
+
                     let logUri = settings[1] ? logger.log(`Prompted ${message.model}:\n${final}\n`) : "";
                     historyManager.addReply(final, message.model);
 

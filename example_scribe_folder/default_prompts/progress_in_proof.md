@@ -1,6 +1,6 @@
 {% scribe %}
 description: Make progress in a proof: Write a single line of Lean 4.
-post_processing: process_code_reply.md
+post_process: process_code_reply.md
 {% endscribe %}
 
 # Make Progress in a Proof
