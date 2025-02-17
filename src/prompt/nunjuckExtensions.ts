@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { historyManager } from "../history";
 
 
@@ -36,10 +37,12 @@ class PromptExtension {
 
 
 const getHistoryItem = (index: number): string => historyManager.getHistoryItem(index)?.text || "";
+const getUuid = (): string => randomUUID();
 
 
 export function setupNunjucksEnvironment(env: any): void {
     env.addExtension('ScribeExtension', new ScribeExtension());
     env.addExtension('PromptExtension', new PromptExtension());
     env.addGlobal('history', getHistoryItem);
+    env.addGlobal('uuid', getUuid);
 }

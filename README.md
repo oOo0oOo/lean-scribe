@@ -170,6 +170,7 @@ hide: true
 - **reply**: The last reply message.
 - **replies**: All replies since the last prompt.
 - **system_diagnostics**: System diagnostics information.
+- **uuid()**: Generate a random identifier.
 
 ## Filters
 

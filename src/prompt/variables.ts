@@ -50,7 +50,7 @@ export async function prepareAllPromptVariables(prompt: Prompt): Promise<any> {
 
     for (const varName of required) {
         switch (varName) {
-            // Basics
+            // Current open file
             case 'file_md':
                 variables['file_md'] = strToMarkdown(leanText);
                 break;
@@ -69,6 +69,8 @@ export async function prepareAllPromptVariables(prompt: Prompt): Promise<any> {
             case 'file_name':
                 variables['file_name'] = leanFile.fileName.split('/').pop();
                 break;
+
+            // System
             case 'system_diagnostics':
                 const setup = await getSystemDiagnostics();
                 variables['system_diagnostics'] = Object.entries(setup)
