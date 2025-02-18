@@ -387,6 +387,7 @@ export class Scribe {
         configManager.loadConfig();
         accountingManager.loadConfig();
         chatModerator.reloadModels();
+        logger.setLogDir();
         this.promptManager.indexAllPrompts();
     }
 }
