@@ -1,78 +1,13 @@
 {
     "default": [
-        "OpenAI o1",
-        "OpenAI o3-mini-high",
         "Anthropic Claude 3.5 Sonnet",
+        "Deepseek R1",
         "Google Gemini 2.0 Flash Thinking",
         "Google Gemini 2.0 Pro Exp",
-        "Deepseek R1"
+        "OpenAI o1",
+        "OpenAI o3-mini-high"
     ],
     "models": [
-        {
-            "type": "openai",
-            "name": "OpenAI o3-mini-high",
-            "cost": [1.1, 4.4, "2025-01-31"],
-            "limit": 200000,
-            "params": {
-                "model": "o3-mini",
-                "reasoning_effort": "high"
-            }
-        },
-        {
-            "type": "openai",
-            "name": "OpenAI o3-mini",
-            "cost": [1.1, 4.4, "2025-01-31"],
-            "limit": 200000,
-            "params": {
-                "model": "o3-mini"
-            }
-        },
-        {
-            "type": "openai",
-            "name": "OpenAI GPT-4o mini",
-            "cost": [0.15, 0.6, "2025-01-17"],
-            "limit": 128000,
-            "params": {
-                "model": "gpt-4o-mini"
-            }
-        },
-        {
-            "type": "openai",
-            "name": "OpenAI GPT-4o",
-            "cost": [2.5, 10, "2025-01-17"],
-            "limit": 128000,
-            "params": {
-                "model": "gpt-4o"
-            }
-        },
-        {
-            "type": "openai",
-            "name": "OpenAI o1",
-            "cost": [15, 60, "2025-01-17"],
-            "limit": 200000,
-            "params": {
-                "model": "o1"
-            }
-        },
-        {
-            "type": "openai",
-            "name": "OpenAI o1-mini",
-            "cost": [3, 12, "2025-01-17"],
-            "limit": 128000,
-            "params": {
-                "model": "o1-mini"
-            }
-        },
-        {
-            "type": "openai",
-            "name": "OpenAI o1-preview",
-            "cost": [15, 60, "2025-01-17"],
-            "limit": 128000,
-            "params": {
-                "model": "o1-preview"
-            }
-        },
-
         {
             "type": "anthropic",
             "name": "Anthropic Claude 3.5 Sonnet",
@@ -89,6 +24,16 @@
             "limit": 200000,
             "params": {
                 "model": "claude-3-5-haiku-latest"
+            }
+        },
+
+        {
+            "type": "fireworks",
+            "name": "Deepseek R1",
+            "cost": [8, 8, "2025-01-29"],
+            "limit": 160000,
+            "params": {
+                "model": "accounts/fireworks/models/deepseek-r1"
             }
         },
 
@@ -121,12 +66,49 @@
         },
 
         {
-            "type": "fireworks",
-            "name": "Deepseek R1",
-            "cost": [8, 8, "2025-01-29"],
-            "limit": 160000,
+            "type": "openai",
+            "name": "OpenAI o1",
+            "cost": [15, 60, "2025-01-17"],
+            "limit": 200000,
             "params": {
-                "model": "accounts/fireworks/models/deepseek-r1"
+                "model": "o1"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI o1-mini",
+            "cost": [3, 12, "2025-01-17"],
+            "limit": 128000,
+            "params": {
+                "model": "o1-mini"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI o3-mini-high",
+            "cost": [1.1, 4.4, "2025-01-31"],
+            "limit": 200000,
+            "params": {
+                "model": "o3-mini",
+                "reasoning_effort": "high"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI GPT-4o mini",
+            "cost": [0.15, 0.6, "2025-01-17"],
+            "limit": 128000,
+            "params": {
+                "model": "gpt-4o-mini"
+            }
+        },
+        {
+            "type": "openai",
+            "name": "OpenAI GPT-4o",
+            "cost": [2.5, 10, "2025-01-17"],
+            "limit": 128000,
+            "params": {
+                "model": "gpt-4o"
             }
         }
     ]
