@@ -282,7 +282,6 @@ const MAX_PROMPT_HISTORY = 10;
         promptInput.value = '';
         suggestionsContainer.classList.add('hidden');
         selectedSuggestionIndex = null;
-        promptInput.focus();
     }
 
     function showSuggestions() {
@@ -356,6 +355,21 @@ const MAX_PROMPT_HISTORY = 10;
             suggestionsContainer.innerHTML = '';
             suggestionsContainer.classList.add('hidden');
         }
+    });
+
+    promptInput.addEventListener('focus', () => {
+        if (!promptInput.value) {
+            const input = "";
+            vscode.postMessage({command: 'search_prompt', input});
+        }
+    });
+
+    promptInput.addEventListener('blur', () => {
+        setTimeout(() => {
+            if (!document.activeElement || document.activeElement !== promptInput) {
+                hideSuggestions();
+            }
+        }, 100);
     });
 
     // Refresh button

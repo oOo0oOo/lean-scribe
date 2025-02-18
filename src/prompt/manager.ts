@@ -101,6 +101,22 @@ export class PromptManager {
     }
 
     public async searchPrompt(searchString: string, limit: number = 8): Promise<Prompt[]> {
+        if (searchString === "") {
+            const keys = Array.from(this.searchIndex.keys());
+            for (let i = keys.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [keys[i], keys[j]] = [keys[j], keys[i]];
+            }
+            const results: Prompt[] = [];
+            for (let i = 0; i < Math.min(limit, keys.length); i++) {
+                const pPath = this.searchIndex.get(keys[i])!;
+                const prompt = await this.getPrompt(pPath);
+                results.push(prompt!);
+            }
+            results.sort((a, b) => a.description.localeCompare(b.description));
+            return results;
+        }
+
         const search = searchString.toLowerCase();
         const results: Prompt[] = [];
 
