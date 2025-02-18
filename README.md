@@ -232,7 +232,7 @@ Return the content between two tags (not including the tags).
 
 ## Misc
 
-### Prompts are not safe!
+### Prompts are not safe
 
 **Lean Scribe prompts can be used for remote code execution!**
 

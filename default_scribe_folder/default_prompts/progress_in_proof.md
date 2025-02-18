@@ -1,5 +1,5 @@
 {% scribe %}
-description: Make progress in a proof: Write a single line of Lean 4.
+description: Make progress in a proof at the cursor position. Write a single line of Lean 4.
 post_process: process_code_reply.md
 {% endscribe %}
 

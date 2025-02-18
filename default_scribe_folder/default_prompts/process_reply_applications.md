@@ -6,6 +6,7 @@ description: Follow up: Process the replies and find applications for the descri
 
 ## Situation
 
+You are an advanced AI that has studied all known mathematics.
 Suggest novel applications of this code.
 
 ## Code Context

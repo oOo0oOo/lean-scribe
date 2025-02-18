@@ -1,11 +1,11 @@
 {% scribe %}
 description: Translate selected formal Lean 4 proof to an informal proof in English.
 {% endscribe %}
-# Translate a Lean 4 Proof to an Informal Proof
+# Translate Selected Lean 4 Proof to an Informal Proof
 
 ## Situation
 
-You are an advanced AI that has studied any known mathematics.
+You are an advanced AI that has studied all known mathematics.
 Translate the following Lean 4 proof to an informal proof.
 
 ## Code Context
