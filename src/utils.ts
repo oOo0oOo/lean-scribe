@@ -99,11 +99,18 @@ export function getPriceAndLoggingSettings(): boolean[] {
     return [config.get<boolean>('acknowledgePriceUnreliable', false), config.get<boolean>('logging', true)];
 }
 
-
-export function removeScribeFolderPath(path: string): string {
-    return path.replace(getScribeFolderPath() + "/", "");
+export function removeScribeFolderPath(filePath: string): string {
+    const scribeFolderPath = getScribeFolderPath();
+    if (!scribeFolderPath) {
+        return filePath;
+    }
+    const normalizedFilePath = path.normalize(filePath);
+    const normalizedScribeFolderPath = path.normalize(scribeFolderPath + path.sep);
+    if (normalizedFilePath.startsWith(normalizedScribeFolderPath)) {
+        return normalizedFilePath.substring(normalizedScribeFolderPath.length);
+    }
+    return filePath;
 }
-
 
 export function countTokens(text: string): number {
     return text.length / 3; // Scientifically proven

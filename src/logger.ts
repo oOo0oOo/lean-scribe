@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { pathToFileURL } from 'url';
 import { getScribeFolderPath } from './utils';
 
 export class Logger {
@@ -27,7 +28,9 @@ export class Logger {
     }
 
     getLogUri(line: number) {
-        return "file://" + this.getLogFilePath() + "#" + line;
+        const logFilePath = this.getLogFilePath();
+        const fileUrl = pathToFileURL(logFilePath).toString();
+        return `${fileUrl}#${line}`;
     }
 
     getLogFilePath(): string {
@@ -50,7 +53,8 @@ export class Logger {
         const logMessage = `[${timestamp}] ${message}\n`;
         fs.appendFileSync(logFilePath, logMessage);
 
-        return "file://" + logFilePath + "#" + lines;
+        const fileUrl = pathToFileURL(logFilePath).toString();
+        return `${fileUrl}#${lines}`;
     }
 }
 
