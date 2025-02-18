@@ -227,6 +227,15 @@ Return the content between two tags (not including the tags).
 
 ## Misc
 
+### Prompts are not safe
+
+**Lean Scribe prompts can be used for remote code execution!**
+
+- Nunjucks itself is [not safe](https://mozilla.github.io/nunjucks/templating.html) for user-defined templates.
+- Lean Scribe introduces additional exploits. E.g. via code execution `{% run "code" %}.
+
+You are responsible for running prompts written by others.
+
 ### System Prompt
 
 Use the `[[system]]` tag in your prompt:

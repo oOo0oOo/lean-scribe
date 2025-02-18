@@ -9,6 +9,12 @@ if [ -z "$1" ]; then
 fi
 
 new_version="$1"
+echo "Release version will be $new_version"
+read -p "Proceed? (y/N) " confirm
+if [[ ! $confirm =~ ^[Yy]$ ]]; then
+  echo "Release cancelled."
+  exit 1
+fi
 
 # Update version in package.json
 sed -i 's/"version": ".*"/"version": "'$new_version'"/' package.json

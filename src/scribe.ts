@@ -160,6 +160,10 @@ export class Scribe {
             if (entry.isDirectory()) {
                 await this.copyDirectory(srcPath, destPath);
             } else {
+                // Do not overwrite .env file
+                if (entry.name === '.env' && fs.existsSync(destPath)) {
+                    continue;
+                }
                 fs.copyFileSync(srcPath, destPath);
             }
         }
