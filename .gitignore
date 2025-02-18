@@ -13,5 +13,3 @@ test_workspace/test_project/*
 test_workspace/test_project/scribe/logs/
 
 yarn-error.log
-
-example_scribe_folder/logs/

@@ -6,10 +6,10 @@ Lean Scribe has the official [Lean 4 VSCode extension](https://marketplace.visua
 
 ## Installing Lean Scribe
 
-1. Open the extensions tab (`Ctrl-Shift-X`).
+1. Open the extensions tab (`Ctrl/Cmd + Shift + X`).
 2. Search and install the [Lean Scribe](https://marketplace.visualstudio.com/items?itemName=oliverdressler.lean-scribe) VSCode extension.
-3. Setup Lean Scribe folder (`Ctrl+Shift+P` -> `Lean Scribe: Setup Scribe Folder`).
-4. Show Lean Scribe (`Ctrl+Shift+P` -> `Lean Scribe: Show`).
+3. Setup Lean Scribe folder (`Ctrl/Cmd + Shift + P` -> `Lean Scribe: Setup Scribe Folder`).
+4. Show Lean Scribe (`Ctrl/Cmd + Shift + P` -> `Lean Scribe: Show`).
 5. Render your first prompt!
 
 ## Features
@@ -22,7 +22,7 @@ Lean Scribe has the official [Lean 4 VSCode extension](https://marketplace.visua
 
 ![Query multiple state-of-the-art models](images/multiple_llms.png)
 
-### Define prompts as shareable markdown files with variables
+### Define prompts as shareable markdown files with Jinja templating
 
 ![Define prompts as markdown files](images/context_rich_prompts.png)
 
@@ -30,7 +30,9 @@ Lean Scribe has the official [Lean 4 VSCode extension](https://marketplace.visua
 
 Lean Scribe uses a global folder for storage. It is highly recommended to do the initial setup via the command:
 
-`Ctrl+Shift+P` -> `Lean Scribe: Setup Scribe Folder`
+`Ctrl/Cmd + Shift + P` -> `Lean Scribe: Setup Scribe Folder`
+
+This wizard will: Ask for a location, copy default prompts and models, and help configure API keys.
 
 Default location is the home directory specific to your OS:
 
@@ -40,21 +42,12 @@ Default location is the home directory specific to your OS:
 
 The scribe folder contains:
 
-- All your prompts (`.md` files) in various subfolders.
-- [models.json](https://github.com/oOo0oOo/lean-scribe/blob/main/example_scribe_folder/models.json) allowing configuration of models.
-- [.env](https://github.com/oOo0oOo/lean-scribe/blob/main/example_scribe_folder/.env) file for setting ENV variables (optional, can be set with other means).
+- All your prompts (.md files).
+- [models.json](https://github.com/oOo0oOo/lean-scribe/blob/main/default_scribe_folder/models.json) allowing for configuration of models.
+- [.env](https://github.com/oOo0oOo/lean-scribe/blob/main/default_scribe_folder/.env) file for setting ENV variables (optional, can be set with other means).
 - `logs/` folder for logging (optional).
 
 **ATTENTION!** Your keys are SECRET! Never commit/share this .env file to a public repository!
-
-### Enabling models
-
-Models are automatically enabled, if the correct ENV variable is set.
-
-EITHER:
-
-- Update the values in the `scribe_folder/.env` file
-- Or set the environment variables in another way.
 
 ## Models
 
@@ -65,12 +58,24 @@ Lean Scribe uses [LangChain](https://js.langchain.com/) for LLM integration and 
 - Google (e.g. Gemini 2.0 Flash)
 - OpenAI (e.g. GPT o3-mini)
 
-Models are configured in the `scribe_folder/models.json` file.
-You can also set other model params like temperature using the params:
+Models are configured in the `scribe_folder/models.json` file (see default [models.json](https://github.com/oOo0oOo/lean-scribe/blob/main/default_scribe_folder/models.json)).
 
-`params = {"model": "gpt-4o-mini", "temperature": 0.9}`
+You can also set other model params like reasoning_effort using the model params:
+
+`params = {"model": "o3-mini", "reasoning_effort": "high", "temperature": 0.5}`
 
 **ATTENTION!** Prices in models.json are not reliable, you need to update them manually.
+
+### Enabling models
+
+All models from a provider are automatically enabled, if the correct ENV variable is set. See default [.env](https://github.com/oOo0oOo/lean-scribe/blob/main/default_scribe_folder/.env).
+
+EITHER:
+
+- Update the values in the `scribe_folder/.env` file
+- Or set the environment variables in another way.
+
+NOTE: Only the defined API keys are allowed in this .env file. Keys containing `...` are ignored by Lean Scribe.
 
 ## Prompt Templating
 
@@ -88,7 +93,7 @@ description: Explain a lean file.
 {% endscribe %}
 
 Explain this lean file to me:
-{{ file_md }} 
+{{ file_md }}
 ```
 
 The scribe tag plus a description mark a valid Lean Scribe prompt.
@@ -109,26 +114,26 @@ Explain this lean file to me:
 Diagnostic messages:
 {{ diagnostics }}
 
-Find key theorems (code) and give concise explanations.
+Find key theorems (code) and give explanations.
 Reply concisely and distill to the essence.
 ```
 
-We are now using `filters` to process a variable before rendering.
+We are now using filters to process a variable before rendering.
 `file` is the raw text of the file, `remove_initial_comment` and `md` are applied in that order.
 
-Read more about templating below, or check out the [example prompts](https://github.com/oOo0oOo/lean-scribe/tree/main/example_scribe_folder).
+Read more about templating below, or check out the [default prompts](https://github.com/oOo0oOo/lean-scribe/tree/main/default_scribe_folder/default_prompts).
 
-## {% scribe %} tag
+BTW the correct syntax highlighting for Lean Scribe prompt files is `Jinja Markdown`.
 
-Each valid Lean Scribe prompt has to contain the `scribe` tag.
+## {% scribe %} block
+
+Each valid Lean Scribe prompt has to contain the `scribe` block with a description:
 
 ```jinja
 {% scribe %}
 description: Explain a lean file.
 {% endscribe %}
 ```
-
-A valid prompt has to contain a description.
 
 There are additional optional arguments:
 
@@ -142,7 +147,7 @@ hide: true
 ```
 
 - **follow_up**: Prompt_path (relative), rendered by "Follow-Up" button in replies.
-- **post_process**: Prompt_path (relative), reply is processed by this prompt. Use `{{ reply }}` in this prompt.
+- **post_process**: Prompt_path (relative), final reply is processed by this prompt. Use `{{ reply }}` in this prompt.
 - **hide**: Hide the prompt in the prompt search.
 
 ## Variables
@@ -161,14 +166,14 @@ hide: true
 - **infos**: Info messages.
 - **goal**: Proof goal(s) at the current cursor position.
 - **term_goal**: Term goal at the current cursor position.
-- **sorry_goals**: All sorries and their goals.
+- **sorry_goals**: All sorries in the file and their goals.
 - **hover**: Hover information at the cursor position.
 - **hover_all**: All hover annotations in the file. **Very powerful, slow, and large!**
-- **import_paths**: Mapped import URIs to workspace paths.
-- **import_files_md**: Formatted import text for MD output. **Large!**
-- **symbols**: Document symbols for the current file.
-- **history(n)**: n >= 0. The nth most recent message (only prompts and replies).
-- **reply**: The last reply message.
+- **import_paths**: File paths for all imports in the file.
+- **import_files_md**: Contents of all imported files, markdown formatted. **Large!**
+- **symbols**: All symbols in the current file (theorems, definitions, etc.).
+- **history(n)**: n: int >= 0. The nth most recent message (only prompts and replies).
+- **reply**: The last message, if it is a reply.
 - **replies**: All replies since the last prompt.
 - **system_diagnostics**: System diagnostics information.
 - **uuid()**: Generate a random identifier.
@@ -177,7 +182,7 @@ hide: true
 
 Many filters are already built-in in nunjucks (jinja in typescript), see [here](https://mozilla.github.io/nunjucks/templating.html#builtin-filters).
 
-Additional custom filters in Lean Scribe:
+Additional custom filters available in Lean Scribe:
 
 ### line_numbers
 
@@ -199,11 +204,11 @@ Remove the initial comment block from the file.
 
 Check if a string contains another string. Example usage
 
-```jinja
+````jinja
 {% if {history(0)} | contains("```lean") %}
 The last message contained a code block.
 {% endif %}
-```
+````
 
 ### remove_tag
 
@@ -227,14 +232,14 @@ Return the content between two tags (not including the tags).
 
 ## Misc
 
-### Prompts are not safe
+### Prompts are not safe!
 
 **Lean Scribe prompts can be used for remote code execution!**
 
-- Nunjucks itself is [not safe](https://mozilla.github.io/nunjucks/templating.html) for user-defined templates.
-- Lean Scribe introduces additional exploits. E.g. via code execution `{% run "code" %}.
+**You are responsible for checking prompts written by others before running them!**
 
-You are responsible for running prompts written by others.
+- Nunjucks itself is [not safe](https://mozilla.github.io/nunjucks/templating.html) for user-defined templates.
+- Lean Scribe introduces additional potential for exploits. E.g. `{% run "code" %}.
 
 ### System Prompt
 
@@ -251,7 +256,8 @@ NOTE: System prompts are not available on some models like "OpenAI o1".
 
 ### Run Code
 
-Use the `run` tag to paste code at the cursor position and check for new diagnostics and goals.
+Use the `run` tag to insert code into the active file at the cursor position and check for new diagnostics and goals.
+This feature is somewhat "hacky" and might not work as expected in all cases.
 
 ```jinja
 {% run "simp" %}
@@ -268,7 +274,7 @@ Use the `run` tag to paste code at the cursor position and check for new diagnos
 ### Reference other prompt
 
 Use the `prompt` tag to reference another prompt.
-This creates a button, which will render that prompt when clicked.
+This creates a button, which will render the prompt when clicked.
 
 Note: The path to the prompt is relative to the current prompt.
 
@@ -280,13 +286,14 @@ NOTE: For now, the HTML for this button is part of the sent prompt.
 
 ### Tactics Output
 
-Output from tactics (e.g. `simp?`) can be included in the prompt via `{{ infos }}` or `{{ diagnostics }}` like other messages.
+Messages from tactics (e.g. `simp?`) can be included in the prompt via `{{ infos }}` or `{{ diagnostics }}`.
+See "Run Code" for a way to try out code in the active file.
 
-### Inheritance and Includes
+### Inheritance
 
-Jinja provides powerful inheritance and include functionality. See [here](https://mozilla.github.io/nunjucks/templating.html) for more details.
+Jinja provides powerful inheritance. See [nunjucks templating](https://mozilla.github.io/nunjucks/templating.html) for more details.
 
-Example:
+Example Use Case:
 
 ```jinja
 {% extends "base_prompt.md" %}
@@ -296,16 +303,23 @@ Example:
 This block overrides the system_prompt block in base_prompt.md.
 [[system]]
 {% endblock %}
-
-{% include "another_prompt.md" %}
 ```
+
+## Log Files
+
+Lean Scribe logs all prompts and replies to a daily changing log file in the `scribe_folder/logs/` directory.
+Prompts and replies in the chat also contain a link to the entry in the log file.
+
+These log files can get quite large, especially if you use a lot of `{{ hover_all }}` or `{{ import_files_md }}`.
+
+Logging can be disabled (see "Settings (VSCode)").
 
 ## Settings (VSCode)
 
 Lean Scribe has a few settings that can be configure via VSCode settings.
 You can set these for a user or for each workspace separately.
 
-`Ctrl+Shift+P` -> `Preferences: Open User Settings` -> Search "Lean Scribe"
+`Ctrl/Cmd + Shift + P` -> `Preferences: Open User Settings` -> Search "Lean Scribe"
 
 ### Scribe Folder
 
@@ -313,19 +327,19 @@ Set the scribe folder location. It is recommended that you set up the scribe fol
 
 ### Acknowledge Price Unreliable
 
-If you want to see price information you need to acknowledge that it might be unreliable.
+If you want to see price information you need to acknowledge that it is unreliable. Update it yourself in models.json.
 
 ### Code Color Scheme
 
-Color scheme to use for highlighting code blocks in prompts. See [here](https://highlightjs.org/demo).
+Color scheme to use for highlighting code blocks in prompts. See [here](https://highlightjs.org/demo) for available color schemes.
 
 ### Logging
 
-Enable logging prompts and replies to a file. Logs are stored in the `scribe_folder/logs/` directory in daily files and can get quite large.
+Enable logging prompts and replies to log files. Logs are stored in the `scribe_folder/logs/` directory in daily files and can get quite large.
 
 ## Roadmap
 
-This extension is still in the early stages of development. If you encounter any issues please report them on the [GitHub issues page](https://github.com/oOo0oOo/lean-scribe/issues).
+This extension is still in active development. If you encounter any issues please report them on the [GitHub issues page](https://github.com/oOo0oOo/lean-scribe/issues).
 
 ATTENTION: There might be breaking changes to the prompt syntax for a few more weeks!
 
@@ -344,3 +358,17 @@ ATTENTION: There might be breaking changes to the prompt syntax for a few more w
 ### Known Issues
 
 - Code highlighting color scheme is not always correct. It sometimes falls back to highlight.js default.
+
+## Citation
+
+If Lean Scribe proves useful, you can cite it as follows:
+
+```bibtex
+@software{leanscribe2025,
+  author = {Oliver Dressler},
+  title = {{Lean Scribe: VSCode extension for rendering and running context-rich Lean 4 prompts}},
+  url = {https://github.com/oOo0oOo/lean-scribe},
+  month = {2},
+  year = {2025}
+}
+```

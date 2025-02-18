@@ -16,7 +16,7 @@ vsc-extension-quickstart.md
 scripts/
 test_workspace/
 infos/
-example_scribe_folder/
+default_scribe_folder/
 docs/
 
 TODO.md

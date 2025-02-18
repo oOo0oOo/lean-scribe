@@ -16,6 +16,13 @@ export function loadFileInScribeFolder(path: string): string | null {
 }
 
 
+const allowedEnvKeys = [
+    "ANTHROPIC_API_KEY",
+    "FIREWORKS_API_KEY",
+    "GOOGLE_API_KEY",
+    "OPENAI_API_KEY"
+];
+
 export function loadWorkspaceEnv() {
     const envContent = loadFileInScribeFolder('.env');
     if (!envContent) {
@@ -28,7 +35,10 @@ export function loadWorkspaceEnv() {
             if (key && value) {
                 const val = value.trim();
                 if (!val.includes("...")) {
-                    process.env[key.trim()] = val;
+                    const k = key.trim();
+                    if (allowedEnvKeys.includes(k)) {
+                        process.env[k] = val;
+                    }
                 }
             }
         });

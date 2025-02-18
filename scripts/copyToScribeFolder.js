@@ -1,9 +1,9 @@
-// ONLY DEVELOPMENT: Copy all files (except .env) in the example_scribe_folder to the scribe folder
+// ONLY DEVELOPMENT: Copy all files (except .env) in the default_scribe_folder to the scribe folder
 const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
 
-const sourceDir = path.join(__dirname, '..', 'example_scribe_folder');
+const sourceDir = path.join(__dirname, '..', 'default_scribe_folder');
 const targetDir = path.join(os.homedir(), 'scribe');
 
 async function copyFiles(srcDir, destDir) {

@@ -73,7 +73,7 @@ export class Scribe {
             );
             if (setupDefaults === 'Yes (recommended)') {
                 try {
-                    // Download zip from GitHub, then copy example_scribe_folder to scribeFolder
+                    // Download zip from GitHub, then copy default_scribe_folder to scribeFolder
                     const downloadUrl = 'https://codeload.github.com/oOo0oOo/lean-scribe/zip/refs/heads/main';
 
                     const dataChunks: Buffer[] = [];
@@ -90,9 +90,9 @@ export class Scribe {
                     fs.mkdirSync(tmpDir, { recursive: true });
                     zip.extractAllTo(tmpDir, true);
 
-                    const exampleDir = path.join(tmpDir, 'lean-scribe-main', 'example_scribe_folder');
+                    const exampleDir = path.join(tmpDir, 'lean-scribe-main', 'default_scribe_folder');
                     if (!fs.existsSync(exampleDir)) {
-                        throw new Error('example_scribe_folder not found in downloaded archive.');
+                        throw new Error('default_scribe_folder not found in downloaded archive.');
                     }
 
                     await this.copyDirectory(exampleDir, scribeFolder);
