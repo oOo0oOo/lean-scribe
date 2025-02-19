@@ -5,9 +5,7 @@ class ConfigManager {
     private static instance: ConfigManager;
     private config: any | null;
 
-    private constructor() {
-        this.loadConfig();
-    }
+    private constructor() { }
 
     static getInstance(): ConfigManager {
         if (!ConfigManager.instance) {

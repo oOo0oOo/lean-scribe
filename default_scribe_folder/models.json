@@ -1,9 +1,10 @@
 {
     "default": [
         "Anthropic Claude 3.5 Sonnet",
-        "Deepseek R1",
+        "Fireworks Deepseek R1",
         "Google Gemini 2.0 Flash Thinking",
         "Google Gemini 2.0 Pro Exp",
+        "Ollama Deepseek R1 7B",
         "OpenAI o1",
         "OpenAI o3-mini-high"
     ],
@@ -29,11 +30,33 @@
 
         {
             "type": "fireworks",
-            "name": "Deepseek R1",
+            "name": "Fireworks Deepseek R1",
             "cost": [8, 8, "2025-01-29"],
             "limit": 160000,
             "params": {
                 "model": "accounts/fireworks/models/deepseek-r1"
+            }
+        },
+
+        {
+            "type": "ollama",
+            "name": "Ollama Deepseek R1 7B",
+            "params": {
+                "model": "deepseek-r1"
+            }
+        },
+        {
+            "type": "ollama",
+            "name": "Ollama Code Llama",
+            "params": {
+                "model": "codellama"
+            }
+        },
+        {
+            "type": "ollama",
+            "name": "Ollama qwen2.5-coder 7B",
+            "params": {
+                "model": "qwen2.5-coder:7b"
             }
         },
 

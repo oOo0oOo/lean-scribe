@@ -1,8 +1,9 @@
+import * as vscode from "vscode";
+
 import { ChatModel } from "./model";
 import { configManager } from "../configManager";
 import { RenderedPrompt } from "../prompt/manager";
 import { AIMessageChunk } from "@langchain/core/messages";
-
 
 class ChatModerator {
     // Global singleton instance. Manages all chat models. 
@@ -17,11 +18,7 @@ class ChatModerator {
         return ChatModerator.instance;
     }
 
-    private constructor() {
-        this.reloadModels();
-    }
-
-    reloadModels() {
+    async reloadModels() {
         // Load models from json
         let config = configManager.getConfig(true);
         if (!config) {
@@ -37,7 +34,7 @@ class ChatModerator {
 
     async getModel(modelName: string): Promise<ChatModel> {
         if (!this.models[modelName]) {
-            this.models[modelName] = new ChatModel(this.modelConfigs[modelName]);
+            this.models[modelName] = await ChatModel.create(this.modelConfigs[modelName]);
         }
         return this.models[modelName];
     }
@@ -52,6 +49,7 @@ class ChatModerator {
 
     async * sendPrompt(modelName: string, rendered: RenderedPrompt): AsyncGenerator<AIMessageChunk> {
         const model = await this.getModel(modelName);
+        vscode.window.showInformationMessage(`Prompting: ${modelName}`);
         yield* model.sendPrompt(rendered.user, rendered.system);
     }
 }

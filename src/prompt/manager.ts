@@ -33,7 +33,6 @@ export class PromptManager {
     public static async initialize(): Promise<void> {
         if (!PromptManager.instance) {
             PromptManager.instance = new PromptManager();
-            await this.instance.indexAllPrompts();
         }
     }
 

@@ -2,9 +2,11 @@ import { ChatOpenAI } from "@langchain/openai";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatFireworks } from "@langchain/community/chat_models/fireworks";
+import { ChatOllama } from "@langchain/ollama";
 import { AIMessageChunk } from "@langchain/core/messages";
+import { pullOllamaModelIfNecessary } from "../utils";
 
-type ModelType = 'openai' | 'anthropic' | 'google' | 'fireworks';
+type ModelType = 'openai' | 'anthropic' | 'google' | 'fireworks' | 'ollama';
 
 interface ModelParams {
     [key: string]: any;
@@ -19,23 +21,33 @@ export type ModelReply = {
 class ChatModel {
     private model: any;
 
-    constructor(params: ModelParams) {
+    private constructor(modelInstance: any) {
+        this.model = modelInstance;
+    }
+
+    public static async create(params: ModelParams): Promise<ChatModel> {
+        let modelInstance: any;
         switch (params["type"]) {
             case 'anthropic':
-                this.model = new ChatAnthropic({ ...params.params });
+                modelInstance = new ChatAnthropic({ ...params.params });
                 break;
             case 'google':
-                this.model = new ChatGoogleGenerativeAI({ ...params.params });
+                modelInstance = new ChatGoogleGenerativeAI({ ...params.params });
                 break;
             case 'openai':
-                this.model = new ChatOpenAI({ ...params.params });
+                modelInstance = new ChatOpenAI({ ...params.params });
                 break;
             case 'fireworks':
-                this.model = new ChatFireworks({ ...params.params });
+                modelInstance = new ChatFireworks({ ...params.params });
+                break;
+            case 'ollama':
+                await pullOllamaModelIfNecessary(params.params.model);
+                modelInstance = new ChatOllama({ ...params.params });
                 break;
             default:
                 throw new Error('Unsupported model type');
         }
+        return new ChatModel(modelInstance);
     }
 
     async * sendPrompt(prompt: string, system: string = ""): AsyncGenerator<AIMessageChunk> {

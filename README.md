@@ -4,6 +4,8 @@ Lean Scribe is a VSCode extension for rendering and running context-rich Lean 4 
 
 Lean Scribe has the official [Lean 4 VSCode extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4) as a dependency.
 
+It supports models from Anthropic, Fireworks.ai, Google, OpenAI, and Ollama (local).
+
 ## Installing Lean Scribe
 
 1. Open the extensions tab (`Ctrl/Cmd + Shift + X`).
@@ -57,6 +59,7 @@ Lean Scribe uses [LangChain](https://js.langchain.com/) for LLM integration and 
 - Fireworks.ai (e.g. Deepseek R1)
 - Google (e.g. Gemini 2.0 Flash)
 - OpenAI (e.g. GPT o3-mini)
+- Ollama (local, e.g. Deepseek R1, Code Llama)
 
 Models are configured in the `scribe_folder/models.json` file (see default [models.json](https://github.com/oOo0oOo/lean-scribe/blob/main/default_scribe_folder/models.json)).
 
@@ -76,6 +79,21 @@ EITHER:
 - Or set the environment variables in another way.
 
 NOTE: Only the defined API keys are allowed in this .env file. Keys containing `...` are ignored by Lean Scribe.
+
+### Ollama (Local Models)
+
+- Follow instructions to [Setup Ollama](https://github.com/ollama/ollama).
+- Run the Ollama server `ollama serve`, it might already be running.
+- Ollama models in [models.json](https://github.com/oOo0oOo/lean-scribe/blob/main/default_scribe_folder/models.json) are automatically enabled, and pulled on first use.
+
+Ubuntu example:
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+ollama serve
+```
+
+Check out the [Ollama library](https://ollama.com/library) for many great models to try!
 
 ## Prompt Templating
 
@@ -152,31 +170,31 @@ hide: true
 
 ## Variables
 
-- **file_md**: File text wrapped in \`\`\`lean markdown syntax.
-- **file**: Raw text of the file.
-- **file_before_cursor**: File text before the editor cursor.
-- **file_after_cursor**: File text after the editor cursor.
-- **file_path**: Full file path on the system.
-- **file_name**: Filename only, without directories.
 - **cursor**: Current cursor position in the file (line:column).
-- **selection**: Currently selected text in the editor.
 - **diagnostics**: Collated error, warning, and info messages.
 - **errors**: Error messages.
-- **warnings**: Warning messages.
-- **infos**: Info messages.
+- **file**: Raw text of the file.
+- **file_after_cursor**: File text after the editor cursor.
+- **file_before_cursor**: File text before the editor cursor.
+- **file_md**: File text wrapped in ```lean markdown syntax.
+- **file_name**: Filename only, without directories.
+- **file_path**: Full file path on the system.
 - **goal**: Proof goal(s) at the current cursor position.
-- **term_goal**: Term goal at the current cursor position.
-- **sorry_goals**: All sorries in the file and their goals.
+- **history(n)**: n: int >= 0. The nth most recent message (only prompts and replies).
 - **hover**: Hover information at the cursor position.
 - **hover_all**: All hover annotations in the file. **Very powerful, slow, and large!**
-- **import_paths**: File paths for all imports in the file.
+- **infos**: Info messages.
 - **import_files_md**: Contents of all imported files, markdown formatted. **Large!**
-- **symbols**: All symbols in the current file (theorems, definitions, etc.).
-- **history(n)**: n: int >= 0. The nth most recent message (only prompts and replies).
+- **import_paths**: File paths for all imports in the file.
 - **reply**: The last message, if it is a reply.
 - **replies**: All replies since the last prompt.
+- **selection**: Currently selected text in the editor.
+- **sorry_goals**: All sorries in the file and their goals.
+- **symbols**: All symbols in the current file (theorems, definitions, etc.).
 - **system_diagnostics**: System diagnostics information.
+- **term_goal**: Term goal at the current cursor position.
 - **uuid()**: Generate a random identifier.
+- **warnings**: Warning messages.
 
 ## Filters
 
@@ -345,10 +363,9 @@ ATTENTION: There might be breaking changes to the prompt syntax for a few more w
 
 ### Planned Features
 
-- Support for local models via [Ollama](https://js.langchain.com/docs/integrations/chat/ollama/).
-- Easy sharing of prompts. Possibly via repo links.
 - More variables (LSP, documentation, loogle, ...) and filters.
 - "Raw" variables allowing for `{{ diagnostics_raw[2] }}` or `{{ goal_raw[1] }}`.
+- Easy sharing of prompts. Possibly via repo links.
 
 ### Potential Features
 

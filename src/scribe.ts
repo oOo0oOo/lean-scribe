@@ -187,7 +187,6 @@ export class Scribe {
 
             switch (message.command) {
                 case 'run_prompt':
-                    vscode.window.showInformationMessage(`Prompting: ${message.model}`);
                     const messageId = Math.random().toString(36).substring(2, 15);
                     const response = await chatModerator.sendPrompt(message.model, message.rendered);
 

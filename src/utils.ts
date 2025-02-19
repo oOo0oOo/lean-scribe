@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import path from 'path';
+import net from 'net';
 
 
 export function loadFileInScribeFolder(path: string): string | null {
@@ -240,4 +241,100 @@ export function parseScribeBlock(text: string): ScribeBlock | null {
     }, {} as ScribeBlock);
 
     return metaObject;
+}
+
+// OLLAMA SUPPORT
+export async function isOllamaRunning(timeout: number = 2000): Promise<boolean> {
+    return new Promise((resolve) => {
+        const socket = new net.Socket();
+
+        const cleanUp = (result: boolean) => {
+            socket.destroy();
+            resolve(result);
+        };
+
+        socket.setTimeout(timeout);
+        socket.once('connect', () => cleanUp(true));
+        socket.once('timeout', () => cleanUp(false));
+        socket.once('error', () => cleanUp(false));
+        socket.connect(11434, '127.0.0.1');
+    });
+}
+
+export async function getOllamaContextLength(name: string): Promise<number | null> {
+    // Also used to check if a model is available
+    const response = await fetch('http://localhost:11434/api/show', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "model": name })
+    });
+
+    if (!response.ok) {
+        return null;
+    }
+
+    const resp: any = await response.json();
+    const model_info: any = resp.model_info;
+    const key = Object.keys(model_info).find(k => k.includes('context_length'));
+    const value = key ? parseInt(model_info[key], 10) : NaN;
+    return isNaN(value) ? null : value;
+}
+
+export async function pullOllamaModelIfNecessary(name: string): Promise<void> {
+    if (!await isOllamaRunning() || await getOllamaContextLength(name)) {
+        return;
+    }
+    await pullOllamaModel(name);
+}
+
+export async function pullOllamaModel(name: string): Promise<void> {
+    await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: `Pulling model "${name}"`,
+        cancellable: false
+    }, async progress => {
+        const response = await fetch('http://localhost:11434/api/pull', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: name, stream: true })
+        });
+
+        if (!response.body) {
+            throw new Error('Response body is empty');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = '';
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                break;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+                if (!line.trim()) {
+                    continue;
+                }
+                try {
+                    const data = JSON.parse(line);
+                    if (data.total && data.completed) {
+                        const percent = Math.floor((data.completed / data.total) * 100);
+                        progress.report({ message: `Downloading (${percent}%)` });
+                    }
+                    if (data.status === 'success') {
+                        progress.report({ message: `Model "${name}" pulled successfully.` });
+                        return;
+                    }
+                } catch (err) {
+                    console.error('Error parsing line:', line, err);
+                }
+            }
+        }
+    });
 }

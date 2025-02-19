@@ -1,5 +1,5 @@
 import { configManager } from './configManager';
-import { countTokens } from './utils';
+import { countTokens, getOllamaContextLength, isOllamaRunning } from './utils';
 import { RenderedPrompt } from './prompt/manager';
 import { AIMessageChunk } from '@langchain/core/messages';
 
@@ -41,7 +41,6 @@ class AccountingManager {
     public static getInstance(): AccountingManager {
         if (!AccountingManager.instance) {
             AccountingManager.instance = new AccountingManager();
-            this.instance.loadConfig();
         }
         return AccountingManager.instance;
     }
@@ -65,9 +64,22 @@ class AccountingManager {
             .filter(([, envVar]) => process.env[envVar])
             .map(([type]) => type);
 
+        // Ollama
+        if (await isOllamaRunning()) {
+            availableTypes.push("ollama");
+        }
+
         this.models = [];
-        for (const model of config.models) {
+        for (let model of config.models) {
             if (availableTypes.includes(model.type)) {
+                // Add ollama metadata: Context length for ready models
+                if (model.type === "ollama") {
+                    model.cost = [0, 0, ""];
+                    model.limit = 10000;
+                    const length = await getOllamaContextLength(model.params.model);
+                    model.limit = length || 10000;
+                }
+
                 this.models.push(model);
             }
         }
