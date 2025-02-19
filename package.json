@@ -2,7 +2,7 @@
   "name": "lean-scribe",
   "displayName": "Lean Scribe",
   "description": "Render and run context-rich Lean 4 prompts.",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "SEE LICENSE IN LICENSE",
   "publisher": "oliverdressler",
   "icon": "images/icon.png",
