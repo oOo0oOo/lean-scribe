@@ -101,7 +101,7 @@ export class Scribe {
 
                     // Add API keys to .env
                     const addKeys = await vscode.window.showInformationMessage(
-                        'API keys are required to use the models. Do you want to add API keys to the .env file now?',
+                        'API keys are required to use non-Ollama models. Do you want to add API keys to the .env file now?',
                         'Yes',
                         'No'
                     );

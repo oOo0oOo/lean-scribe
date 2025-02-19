@@ -72,6 +72,7 @@ You can also set other model params like reasoning_effort using the model params
 ### Enabling models
 
 All models from a provider are automatically enabled, if the correct ENV variable is set. See default [.env](https://github.com/oOo0oOo/lean-scribe/blob/main/default_scribe_folder/.env).
+See `Ollama (Local Models)` below, if you prefer to use local models.
 
 EITHER:
 
@@ -364,11 +365,11 @@ ATTENTION: There might be breaking changes to the prompt syntax for a few more w
 ### Planned Features
 
 - More variables (LSP, documentation, loogle, ...) and filters.
-- "Raw" variables allowing for `{{ diagnostics_raw[2] }}` or `{{ goal_raw[1] }}`.
 - Easy sharing of prompts. Possibly via repo links.
 
 ### Potential Features
 
+- "Raw" variables allowing for `{{ diagnostics_raw[2] }}` or `{{ goal_raw[1] }}`.
 - Automatic prompt chains. Requires automatic: Reply parsing, editor interaction, conditional actions, ...
 - `{{ url("https://example.com") }}`: Embedd URL content. It's surprisingly hard because nunjucks is sync by default.
 
